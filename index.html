@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>ETH AESTHETIC Center</title>
+    <style>
+        :root { --rose:#b98095; --rose-dark:#8f6173; --rose-soft:#ead7de; --blush:#fbf5f7; --paper:#fffdfd; --ink:#594d52; --muted:#8c7d83; --line:#eadfe3; }
+        html { width:100%; max-width:100%; overflow-x:hidden; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+        body { font-family: "Segoe UI", Arial, sans-serif; background: var(--blush); margin:0; padding:72px 20px 20px; color: var(--ink); transition:padding .25s ease; }
+        .header { text-align: center; color: var(--rose-dark); margin-bottom: 24px; }
+        .header h1 { margin-bottom: 6px; letter-spacing: .5px; }
+        .header p { color: var(--muted); margin-top: 0; }
+        
+        .tabs { position:fixed; z-index:900; left:0; top:0; bottom:0; width:min(86vw,300px); display:flex; flex-direction:column; gap:7px; padding:calc(18px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom)); overflow-y:auto; background:var(--paper); border-right:1px solid var(--line); box-shadow:5px 0 22px rgba(110,77,90,.10); box-sizing:border-box; transition:transform .26s cubic-bezier(.22,.8,.3,1); transform:translateX(-105%); }
+        .tabs.open { transform:translateX(0); }
+        .sidebar-brand { min-height:54px; padding:9px 8px 18px 58px; box-sizing:border-box; color:var(--rose-dark); font-size:18px; font-weight:700; line-height:1.15; }
+        .sidebar-brand small { display:block; margin-top:4px; color:var(--muted); font-size:12px; font-weight:normal; }
+        .tab { padding:13px 14px; margin:0; cursor:pointer; background:#f1ecee; color:var(--muted); border:none; font-weight:600; text-align:left; }
+        .tab.active { background: var(--rose); color: white; }
+        .menu-group { margin-bottom:5px; }
+        .menu-group-button { display:flex; justify-content:space-between; align-items:center; margin:0; padding:11px 10px; background:transparent; color:var(--rose-dark); font-size:12px; letter-spacing:.7px; text-align:left; }
+        .menu-group-button:hover { background:#f8f1f3; }
+        .menu-group-button::after { content:'▾'; font-size:15px; transition:transform .2s ease; }
+        .menu-group:not(.open) .menu-group-button::after { transform:rotate(-90deg); }
+        .menu-children { display:none; flex-direction:column; gap:6px; padding:5px 0 7px 8px; }
+        .menu-group.open .menu-children { display:flex; }
+        .menu-toggle { display:flex; position:fixed; z-index:950; left:calc(14px + env(safe-area-inset-left)); top:calc(14px + env(safe-area-inset-top)); width:46px; height:46px; margin:0; padding:0; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.30); border-radius:14px; background:var(--rose-dark); box-shadow:0 7px 20px rgba(68,43,53,.22); transition:background .2s ease,box-shadow .2s ease,transform .2s ease; }
+        .menu-toggle:hover { background:#7f5264; }
+        .menu-toggle:active { transform:scale(.96); }
+        .menu-toggle-icon { position:relative; display:block; width:22px; height:18px; }
+        .menu-toggle-icon span { position:absolute; left:0; width:22px; height:2px; border-radius:3px; background:white; transition:top .22s ease,transform .22s ease,opacity .16s ease; }
+        .menu-toggle-icon span:nth-child(1) { top:1px; }
+        .menu-toggle-icon span:nth-child(2) { top:8px; }
+        .menu-toggle-icon span:nth-child(3) { top:15px; }
+        .menu-toggle.is-open .menu-toggle-icon span:nth-child(1) { top:8px; transform:rotate(45deg); }
+        .menu-toggle.is-open .menu-toggle-icon span:nth-child(2) { opacity:0; transform:scaleX(.3); }
+        .menu-toggle.is-open .menu-toggle-icon span:nth-child(3) { top:8px; transform:rotate(-45deg); }
+        .sidebar-overlay { display:none; position:fixed; z-index:880; inset:0; background:rgba(50,35,42,.42); }
+        .sidebar-overlay.open { display:block; }
+        
+        .sub-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .sub-tab { padding: 8px 15px; cursor: pointer; background: #f1e9ec; color: var(--muted); border: none; border-radius: 6px; }
+        .sub-tab.active { background: var(--rose-dark); color: white; }
+        .sub-content { display: none; }
+        .sub-content.active { display: block; }
+
+        .content { display: none; background: var(--paper); padding: 22px; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 24px rgba(110,77,90,.08); }
+        .content.active { display: block; }
+        
+        select, input, textarea, button { padding: 10px; margin: 5px 0; width: 100%; border-radius: 7px; border: 1px solid var(--line); box-sizing: border-box; color: var(--ink); font-family:inherit; }
+        select, input, textarea { background: white; outline: none; }
+        select:focus, input:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(185,128,149,.12); }
+        button { background: var(--rose); color: white; font-weight: 600; cursor: pointer; border: none; transition: .18s ease; }
+        button:hover { background: var(--rose-dark); }
+        .btn-small { padding: 5px 10px; width: auto; font-size: 12px; }
+        .btn-danger { background: #dc3545; }
+        .btn-warning { background: #ffc107; color: black; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; }
+        th { background-color: #f7f1f3; color: var(--rose-dark); font-weight: 600; }
+        .row { display: flex; gap: 20px; min-width:0; }
+        .col { flex: 1; min-width:0; }
+
+        .modal { display:none; position:fixed; z-index:1000; inset:0; width:100%; height:100%; background:rgba(0,0,0,.5); overflow-y:auto; }
+        .modal-content { position:relative; z-index:1001; background:var(--paper); width:420px; max-width:calc(100% - 40px); margin:45px auto; padding:20px; border-radius:12px; box-shadow:0 18px 50px rgba(50,35,42,.24); }
+        .search-box { margin-bottom: 12px; }
+        .search-box label, .date-filter label { display:block; color:var(--muted); font-size:13px; }
+        .history-panel { background:#fcf9fa; padding:16px; border-radius:9px; border:1px solid var(--line); min-height:180px; }
+        .history-toolbar { display:none; margin-bottom:14px; }
+        .history-toolbar.visible { display:block; }
+        .date-filter { display:flex; align-items:end; gap:8px; }
+        .date-filter > div { flex:1; }
+        .date-filter button { width:auto; padding:10px 14px; }
+        .btn-muted { background:#aaa0a4; }
+        .history-list { list-style:none; padding:0; margin:12px 0 0; }
+        .history-item { background:white; border:1px solid var(--line); border-left:4px solid var(--rose-soft); border-radius:7px; padding:11px 12px; margin-bottom:8px; }
+        .history-item.product { border-left-color:#9ebaa7; }
+        .history-title { margin:0 0 14px; }
+        .history-day { margin-top:16px; }
+        .history-day:first-child { margin-top:0; }
+        .history-day-title { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:11px 12px; background:#f1e8eb; color:var(--rose-dark); border-radius:7px; font-size:13px; font-weight:700; cursor:pointer; list-style:none; }
+        .history-day-title::-webkit-details-marker { display:none; }
+        .history-day-title::after { content:'Lihat ▼'; font-size:12px; color:var(--muted); white-space:nowrap; }
+        .history-day[open] .history-day-title { border-radius:7px 7px 0 0; }
+        .history-day[open] .history-day-title::after { content:'Tutup ▲'; }
+        .history-day-count { color:var(--muted); font-size:12px; font-weight:normal; }
+        .history-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:10px 4px 2px; max-height:360px; overflow-y:auto; }
+        .history-column { min-width:0; }
+        .history-column-title { margin:0 0 8px; padding:8px 10px; border-radius:6px; text-align:center; background:#f7eef1; color:var(--rose-dark); }
+        .history-column-title.product { background:#edf4ef; color:#668373; }
+        .history-date, .result-count { color:var(--muted); font-size:12px; font-weight:normal; }
+        .history-empty { color:var(--muted); text-align:center; padding:28px 10px; }
+        .table-scroll { max-height:400px; overflow:auto; border:1px solid var(--line); border-radius:8px; }
+        .table-scroll table { margin-top:0; }
+        .table-scroll thead th { position:sticky; top:0; z-index:1; background:#f7f1f3; }
+        body.modal-open { overflow:hidden; }
+        body.welcome-open { overflow:hidden; }
+        body.modal-open .table-scroll thead th { position:static; z-index:auto; }
+        .data-info { margin-top:8px; color:var(--muted); font-size:13px; }
+        .section-action { display:flex; justify-content:flex-end; margin-bottom:8px; }
+        .section-action button { width:auto; padding:9px 14px; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+        .form-note { margin:0 0 5px; color:var(--muted); font-size:12px; }
+        .item-picker-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px; }
+        .item-picker-card { padding:12px; background:#fcf8f9; border:1px solid var(--line); border-radius:9px; }
+        .item-picker-card label { display:block; color:var(--rose-dark); font-weight:600; }
+        .item-picker-card.product { background:#f7faf8; }
+        .multi-select-list { max-height:170px; overflow:auto; margin-top:8px; border:1px solid var(--line); border-radius:7px; background:white; }
+        .multi-select-option { display:flex!important; align-items:center; gap:8px; padding:8px 10px; margin:0!important; border-bottom:1px solid #f1e8eb; color:var(--text)!important; font-weight:normal!important; cursor:pointer; }
+        .multi-select-option:last-child { border-bottom:0; }
+        .multi-select-option input { width:auto; margin:0; }
+        .multi-select-empty { padding:12px; color:var(--muted); font-size:13px; text-align:center; }
+        .billing-tools { display:grid; grid-template-columns:1fr 180px; gap:10px; margin-bottom:12px; }
+        .status-badge { display:inline-block; padding:5px 9px; border-radius:999px; font-size:12px; font-weight:600; }
+        .status-lunas { background:#dcecdf; color:#557661; }
+        .status-belum { background:#f3e1e1; color:#9a5f65; }
+        .action-group { display:flex; gap:5px; flex-wrap:wrap; }
+        .action-group button { width:auto; margin:0; }
+        .action-menu { display:inline-block; }
+        .action-gear { width:38px; height:36px; margin:0; padding:0; font-size:19px; line-height:1; background:var(--rose-dark); }
+        .action-menu-panel { display:none; position:fixed; z-index:1200; width:165px; padding:6px; background:white; border:1px solid var(--line); border-radius:9px; box-shadow:0 10px 28px rgba(50,35,42,.24); }
+        .action-menu-panel.open { display:flex; flex-direction:column; gap:5px; }
+        .action-menu-panel button { width:100%; margin:0; text-align:left; }
+        .action-menu-backdrop { display:none; position:fixed; z-index:1190; inset:0; background:rgba(50,35,42,.28); }
+        .nota-actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px; }
+        .nota-actions button { margin:0; }
+        .billing-mode { display:none; padding:9px 11px; margin:8px 0; background:#f3e7eb; color:var(--rose-dark); border-radius:7px; }
+        .payment-summary { margin:10px 0; padding:12px; border:1px solid var(--line); border-radius:8px; background:#fcf9fa; line-height:1.7; }
+        .patient-identity { color:var(--muted); font-size:12px; line-height:1.55; }
+        .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .profile-item { padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:#fcf9fa; }
+        .profile-item.wide { grid-column:1 / -1; }
+        .profile-label { display:block; color:var(--muted); font-size:12px; margin-bottom:3px; }
+        .patient-search { position:relative; }
+        .patient-search > input[type="search"] { padding-right:86px; }
+        input[type="search"]::-webkit-search-cancel-button,
+        input[type="search"]::-webkit-search-decoration { -webkit-appearance:none; appearance:none; display:none; }
+        input[type="search"]::-ms-clear,
+        input[type="search"]::-ms-reveal { display:none; width:0; height:0; }
+        .change-patient-button { display:none; position:absolute; z-index:42; top:50%; right:8px; transform:translateY(-50%); width:30px; height:30px; margin:0; padding:0; border-radius:50%; font-size:0; line-height:0; background:var(--rose-dark); align-items:center; justify-content:center; }
+        .change-patient-button.visible { display:flex; }
+        .search-clear-wrap { position:relative; width:100%; min-width:0; }
+        .search-clear-wrap > input[type="search"] { padding-right:45px; }
+        .search-clear-button { display:none; position:absolute; z-index:5; right:8px; top:50%; transform:translateY(-50%); width:30px; height:30px; margin:0; padding:0; border-radius:50%; background:var(--rose-dark); color:white; font-size:0; line-height:0; align-items:center; justify-content:center; }
+        .search-clear-button.visible { display:flex; }
+        .search-clear-button::before, .search-clear-button::after,
+        .change-patient-button::before, .change-patient-button::after { content:""; position:absolute; left:50%; top:50%; width:12px; height:2px; border-radius:2px; background:white; transform-origin:center; }
+        .search-clear-button::before, .change-patient-button::before { transform:translate(-50%,-50%) rotate(45deg); }
+        .search-clear-button::after, .change-patient-button::after { transform:translate(-50%,-50%) rotate(-45deg); }
+        .patient-search-results { display:none; position:absolute; z-index:40; left:0; top:100%; width:min(1000px, calc(100vw - 310px)); min-width:100%; max-height:320px; overflow-y:auto; background:white; border:1px solid var(--rose); border-radius:8px; box-shadow:0 10px 28px rgba(50,35,42,.20); }
+        .patient-search-results.open { display:block; }
+        .patient-option { display:block; width:100%; margin:0; padding:11px 13px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:white; color:var(--ink); text-align:left; }
+        .patient-option:last-child { border-bottom:0; }
+        .patient-option:hover, .patient-option:focus { background:#f7eef1; color:var(--ink); }
+        .patient-option-name { display:block; font-weight:700; }
+        .patient-option-detail { display:block; margin-top:4px; color:var(--muted); font-size:12px; font-weight:normal; line-height:1.5; }
+        .welcome-screen { display:none; position:fixed; z-index:3000; inset:0; overflow:hidden; align-items:center; justify-content:center; padding:24px; box-sizing:border-box; background:radial-gradient(circle at 50% 42%,#fff 0,#fff9fb 36%,#f4e4ea 100%); }
+        .welcome-screen.active { display:flex; animation:welcomeFadeIn .55s ease both; }
+        .welcome-screen.closing { animation:welcomeFadeOut .55s ease both; pointer-events:none; }
+        .welcome-glow { position:absolute; width:min(72vw,620px); aspect-ratio:1; border-radius:50%; background:radial-gradient(circle,rgba(185,128,149,.16),rgba(185,128,149,0) 68%); animation:welcomeBreathe 3s ease-in-out infinite; }
+        .welcome-card { position:relative; width:min(560px,100%); padding:56px 34px 38px; border:1px solid rgba(185,128,149,.28); border-radius:28px; background:rgba(255,253,253,.88); box-shadow:0 28px 80px rgba(103,68,82,.15); text-align:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+        .welcome-mark { display:flex; align-items:center; justify-content:center; width:72px; height:72px; margin:0 auto 24px; border:1px solid var(--rose-soft); border-radius:50%; color:var(--rose-dark); font-family:Georgia,serif; font-size:30px; letter-spacing:1px; box-shadow:inset 0 0 0 8px #fff7fa; }
+        .welcome-eyebrow { margin:0 0 12px; color:var(--rose); font-size:12px; font-weight:700; letter-spacing:4px; text-transform:uppercase; }
+        .welcome-card h1 { margin:0; color:var(--rose-dark); font-family:Georgia,"Times New Roman",serif; font-size:clamp(32px,6vw,52px); font-weight:500; line-height:1.08; }
+        .welcome-card h1 span { display:block; margin-top:7px; font-family:"Segoe UI",Arial,sans-serif; font-size:.4em; font-weight:500; letter-spacing:5px; text-transform:uppercase; }
+        .welcome-line { width:72px; height:1px; margin:25px auto 20px; background:linear-gradient(90deg,transparent,var(--rose),transparent); }
+        .welcome-copy { margin:0 auto 28px; max-width:380px; color:var(--muted); font-size:15px; line-height:1.7; }
+        .welcome-start { width:auto; min-width:180px; padding:12px 30px; border-radius:999px; letter-spacing:.5px; box-shadow:0 10px 25px rgba(143,97,115,.22); }
+        .welcome-petal { position:absolute; width:10px; height:18px; border-radius:90% 10% 90% 10%; background:rgba(185,128,149,.28); animation:petalFloat 6s ease-in-out infinite; }
+        .welcome-petal.p1 { left:10%; top:18%; transform:rotate(28deg); }
+        .welcome-petal.p2 { right:12%; top:24%; animation-delay:-2s; transform:rotate(75deg); }
+        .welcome-petal.p3 { left:18%; bottom:15%; animation-delay:-4s; transform:rotate(120deg); }
+        .welcome-petal.p4 { right:18%; bottom:13%; animation-delay:-1s; transform:rotate(155deg); }
+        .app-dialog { display:none; position:fixed; z-index:4000; inset:0; padding:20px; box-sizing:border-box; align-items:center; justify-content:center; background:rgba(55,42,48,.48); backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); }
+        .app-dialog.open { display:flex; animation:welcomeFadeIn .2s ease both; }
+        .app-dialog-card { width:min(420px,100%); padding:28px; border:1px solid rgba(185,128,149,.25); border-radius:22px; background:var(--paper); box-shadow:0 24px 70px rgba(48,32,40,.28); text-align:center; animation:dialogPop .24s ease both; }
+        .app-dialog-icon { display:flex; align-items:center; justify-content:center; width:58px; height:58px; margin:0 auto 17px; border-radius:50%; background:#f5e8ed; color:var(--rose-dark); font-family:Georgia,serif; font-size:27px; font-weight:700; }
+        .app-dialog.success .app-dialog-icon { background:#e3f0e6; color:#5d8068; }
+        .app-dialog.error .app-dialog-icon { background:#f7e3e5; color:#a85f67; }
+        .app-dialog.warning .app-dialog-icon { background:#fff1d7; color:#a77a31; }
+        .app-dialog-title { margin:0 0 10px; color:var(--ink); font-size:21px; }
+        .app-dialog-message { margin:0; color:var(--muted); font-size:14px; line-height:1.65; white-space:pre-line; overflow-wrap:anywhere; }
+        .app-dialog-input-wrap { display:none; margin-top:18px; text-align:left; }
+        .app-dialog.with-input .app-dialog-input-wrap { display:block; }
+        .app-dialog-input-wrap label { display:block; margin-bottom:5px; color:var(--muted); font-size:12px; }
+        .app-dialog-input { margin:0; font-size:18px; text-align:center; }
+        .app-dialog-actions { display:flex; gap:9px; margin-top:23px; }
+        .app-dialog-actions button { margin:0; min-height:44px; }
+        .app-dialog-cancel { display:none; background:#eee8ea; color:var(--ink); }
+        .app-dialog.confirm .app-dialog-cancel,
+        .app-dialog.with-input .app-dialog-cancel { display:block; }
+        .app-dialog-confirm { background:var(--rose-dark); }
+        @keyframes dialogPop { from{opacity:0;transform:translateY(10px) scale(.96)} to{opacity:1;transform:none} }
+        @keyframes welcomeFadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes welcomeFadeOut { from{opacity:1} to{opacity:0} }
+        @keyframes welcomeBreathe { 50%{transform:scale(1.08);opacity:.75} }
+        @keyframes petalFloat { 50%{translate:0 -14px;rotate:18deg} }
+        @media (prefers-reduced-motion:reduce) { .welcome-screen,.welcome-glow,.welcome-petal{animation:none!important} }
+        @media (max-width:800px) {
+            body{width:100%;max-width:100%;overflow-x:hidden;padding:calc(62px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));box-sizing:border-box}
+            .header{margin-bottom:16px}.header h1{font-size:24px}.menu-toggle{top:calc(12px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left))}
+            .sidebar-brand{min-height:54px;padding-left:58px}
+            .tabs{width:min(86vw,300px);transform:translateX(-105%)}.tabs.open{transform:translateX(0)}
+            .content{width:100%;min-width:0;padding:14px;box-sizing:border-box}.row{flex-direction:column}.col{width:100%;min-width:0}
+            select,input,textarea{font-size:16px}.date-filter{align-items:stretch;flex-direction:column}.date-filter button{width:100%}
+            .billing-tools{grid-template-columns:1fr}.table-scroll{width:100%;max-width:100%;-webkit-overflow-scrolling:touch}
+            .history-grid{grid-template-columns:1fr 1fr;gap:6px}.history-item{padding:8px;font-size:13px}
+            .patient-search-results{position:static;width:100%;min-width:0;max-height:280px;margin-top:4px;box-shadow:none}
+            .action-menu-backdrop.open{display:block}
+            .action-menu-panel.open{left:calc(12px + env(safe-area-inset-left))!important;right:calc(12px + env(safe-area-inset-right))!important;top:auto!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;width:auto!important;max-height:calc(100vh - 80px);overflow-y:auto;padding:10px;border-radius:14px}
+            .action-menu-panel button{padding:13px;font-size:16px;text-align:center}
+            #modalNota{align-items:center;justify-content:center;overflow:hidden;padding:calc(10px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));box-sizing:border-box}
+            #modalNota .modal-content{display:flex;flex-direction:column;width:min(440px,100%);max-width:440px!important;height:min(700px,calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));max-height:calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));margin:auto;padding:14px;box-sizing:border-box;overflow:hidden}
+            #modalNota h3{flex:none;margin:0 0 10px;font-size:21px}
+            #frameNota{flex:1;min-height:0;height:auto!important;width:100%!important;box-sizing:border-box}
+            .nota-actions{flex:none;grid-template-columns:1fr 1fr;margin-top:8px}
+            .welcome-screen{padding:18px}.welcome-card{padding:42px 22px 30px;border-radius:22px}.welcome-mark{width:62px;height:62px;font-size:26px;margin-bottom:20px}.welcome-copy{font-size:14px}
+            .app-dialog{padding:16px}.app-dialog-card{padding:24px 20px;border-radius:19px}.app-dialog-title{font-size:20px}.app-dialog-message{font-size:14px}.app-dialog-actions{flex-direction:column-reverse}.app-dialog-actions button{width:100%}
+        }
+        .admin-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.metric{background:linear-gradient(145deg,#fff,#f7edf0);border:1px solid var(--line);border-radius:14px;padding:17px}.metric small{display:block;color:#886b76}.metric strong{display:block;margin-top:5px;font-size:21px;color:var(--rose-dark)}.admin-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 8px 25px rgba(92,58,72,.06)}.admin-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.admin-panel-head h3{margin:0}.admin-panel-head p{margin:4px 0 0;color:#8b7680;font-size:13px}.admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:end}.admin-form>div{min-width:0}.admin-form .span-2{grid-column:span 2}.admin-form button{margin:0;min-height:44px}.admin-table-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:22px 0 10px}.attendance-hero{display:grid;grid-template-columns:minmax(220px,1fr) minmax(280px,1.4fr);gap:16px}.attendance-clock{background:linear-gradient(145deg,#9b6279,#bd849a);color:#fff;border-radius:16px;padding:24px;display:flex;flex-direction:column;justify-content:center;text-align:center;min-height:190px}.attendance-clock strong{font-size:34px;letter-spacing:1px}.attendance-clock span{opacity:.88}.attendance-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.negative strong{color:#b64d58}.positive strong{color:#4d8760}@media(max-width:800px){.admin-cards,.admin-form,.attendance-hero{grid-template-columns:1fr}.admin-form .span-2{grid-column:auto}.metric strong{font-size:19px}.admin-panel{padding:15px}.attendance-actions{grid-template-columns:1fr}.admin-panel-head,.admin-table-title{align-items:flex-start;flex-direction:column}}
+        .auth-screen{position:fixed;inset:0;z-index:7000;display:none;align-items:center;justify-content:center;padding:24px;background:radial-gradient(circle at 12% 12%,rgba(185,122,147,.24),transparent 34%),radial-gradient(circle at 88% 88%,rgba(223,183,197,.38),transparent 38%),#f9f2f4}.auth-screen.open{display:flex}.auth-card{width:min(850px,100%);min-height:500px;display:grid;grid-template-columns:.9fr 1.1fr;background:rgba(255,255,255,.94);border:1px solid rgba(178,124,145,.22);border-radius:34px;box-shadow:0 35px 100px rgba(86,48,63,.2);overflow:hidden;position:relative}.auth-brand-panel{position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:42px;color:#fff;background:linear-gradient(155deg,#87566b,#b77b92)}.auth-brand-panel:before,.auth-brand-panel:after{content:"";position:absolute;border:1px solid rgba(255,255,255,.23);border-radius:50%}.auth-brand-panel:before{width:280px;height:280px;top:-110px;right:-110px}.auth-brand-panel:after{width:170px;height:170px;top:42px;right:-85px}.auth-monogram{position:absolute;top:42px;left:42px;width:72px;height:72px;border:1px solid rgba(255,255,255,.55);border-radius:50%;display:grid;place-items:center;font:700 21px Georgia,serif;letter-spacing:2px}.auth-brand-panel h1{font:500 35px Georgia,serif;margin:0 0 12px;line-height:1.1}.auth-brand-panel p{margin:0;line-height:1.65;opacity:.85}.auth-form-panel{padding:52px 56px;display:flex;flex-direction:column;justify-content:center}.auth-eyebrow{color:#a16b81;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase}.auth-form-panel h2{font:500 31px Georgia,serif;color:#523d46;margin:8px 0}.auth-form-panel>p{color:#8b7880;margin:0 0 27px}.auth-form-panel label{font-size:13px;color:#674f59;margin-top:12px}.auth-input-wrap{position:relative}.auth-input-wrap input{min-height:50px;padding-left:43px;border-radius:13px;background:#fdfafb}.auth-input-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#ad7a8e;font-size:17px;pointer-events:none}.auth-form-panel button{min-height:51px;margin-top:20px;border-radius:13px;background:linear-gradient(135deg,#925f75,#ba8097);font-size:15px;box-shadow:0 10px 24px rgba(146,95,117,.24)}.auth-footnote{text-align:center;color:#a18d95;font-size:11px;margin-top:18px}.user-chip{padding:9px 12px;margin:8px 14px;border-radius:10px;background:#f7eef1;color:var(--rose-dark);font-size:12px}.special-attendance{display:block;margin:8px 14px!important;width:calc(100% - 28px)!important;background:linear-gradient(135deg,#6f9a7c,#83ad90)!important;color:#fff!important;text-align:center!important;border-radius:11px!important}.permission-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.permission-item{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px}.permission-item input{width:auto;margin:2px 0 0}@media(max-width:700px){.auth-screen{padding:14px}.auth-card{grid-template-columns:1fr;min-height:0;border-radius:26px}.auth-brand-panel{min-height:155px;padding:26px;justify-content:flex-end}.auth-monogram{top:22px;left:26px;width:56px;height:56px;font-size:17px}.auth-brand-panel h1{font-size:25px;margin-left:75px}.auth-brand-panel p{display:none}.auth-form-panel{padding:30px 26px 28px}.auth-form-panel h2{font-size:27px}.permission-grid{grid-template-columns:1fr}}
+        .attendance-proof{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fdf9fa}.attendance-proof h4{margin:0 0 10px;color:var(--rose-dark)}.attendance-proof button{width:100%;margin:5px 0}.attendance-proof .proof-status{min-height:20px;margin:4px 0 8px;color:#8b7680;font-size:12px}.attendance-proof.ready{border-color:#8bb399;background:#f5fbf7}.attendance-proof.ready .proof-status{color:#4d8760;font-weight:700}.camera-stage{position:relative;overflow:hidden;border-radius:18px;background:#241e21;aspect-ratio:3/4;max-height:62vh;display:grid;place-items:center}.camera-stage video,.camera-stage img{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.camera-guide{position:absolute;inset:9%;border:2px solid rgba(255,255,255,.72);border-radius:50% 50% 44% 44%;pointer-events:none}.camera-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.evidence-photo{width:min(100%,380px);max-height:55vh;object-fit:cover;border-radius:16px;display:block;margin:0 auto 14px}.evidence-meta{background:#f8eff2;border-radius:12px;padding:12px;line-height:1.6}@media(max-width:800px){.camera-actions{grid-template-columns:1fr}}
+        #previewKameraAbsen{transform:none}.camera-location-tag{position:absolute;left:12px;bottom:12px;z-index:2;max-width:calc(100% - 24px);padding:8px 11px;border:1px solid rgba(255,255,255,.3);border-radius:12px;background:rgba(35,26,30,.78);backdrop-filter:blur(8px);color:#fff;font-size:11px;line-height:1.35;box-shadow:0 4px 14px rgba(0,0,0,.2);overflow-wrap:anywhere}.camera-location-tag.ready{background:rgba(55,105,72,.88)}.camera-location-tag.error{background:rgba(155,65,75,.86)}
+        .camera-modal{align-items:center;justify-content:center;padding:12px;box-sizing:border-box}.camera-modal-content{width:min(460px,100%);max-width:460px!important;height:min(760px,calc(100dvh - 24px));max-height:calc(100dvh - 24px);margin:auto!important;padding:16px!important;overflow:hidden!important;display:flex;flex-direction:column;box-sizing:border-box}.camera-heading{flex:none}.camera-heading h3{margin:0 0 4px}.camera-heading p{margin:0 0 12px;color:#8b7680}.camera-stage{flex:1;min-height:0;width:100%;aspect-ratio:auto;max-height:none}.camera-stage video,.camera-stage img{position:absolute;inset:0}.camera-message{flex:none;min-height:18px;margin:8px 0 0;font-size:12px}.camera-actions{flex:none;grid-template-columns:1fr 1fr;min-height:100px;align-items:stretch}.camera-actions button{width:100%;height:44px;margin:0}.camera-capture-slot{display:grid;min-width:0}.camera-capture-slot>button{grid-area:1/1}.camera-actions .is-hidden{visibility:hidden;pointer-events:none}.camera-cancel{grid-column:1/-1}@media(max-width:600px){.camera-modal{padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left))}.camera-modal-content{width:100%;height:calc(100dvh - max(12px,env(safe-area-inset-top) + env(safe-area-inset-bottom)));max-height:none;border-radius:20px;padding:12px!important}.camera-heading p{margin-bottom:8px}.camera-actions{grid-template-columns:1fr 1fr;min-height:100px;gap:8px}.camera-cancel{grid-column:1/-1}.camera-location-tag{left:9px;bottom:9px}}
+        /* Pengaman lebar untuk seluruh menu administrasi di Android dan iOS */
+        html,body{width:100%;max-width:100%;overflow-x:hidden}.main,.content,.admin-panel,.admin-cards,.admin-form,.attendance-hero,.attendance-proof,.admin-table-title,.table-scroll{min-width:0;max-width:100%;box-sizing:border-box}.content{overflow-x:hidden}.table-scroll{width:100%;overflow-x:auto!important;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}.table-scroll table{margin:0;max-width:none}.admin-form input,.admin-form select,.admin-form textarea,.admin-form button{width:100%;max-width:100%;box-sizing:border-box}.action-menu{max-width:100%}.action-menu-panel{right:0;left:auto;max-width:min(260px,calc(100vw - 32px));box-sizing:border-box}
+        @media(max-width:800px){.content{width:100%;padding-left:12px!important;padding-right:12px!important}.admin-panel{width:100%;padding:14px}.admin-table-title{width:100%;gap:10px}.admin-table-title>div{min-width:0;max-width:100%}.admin-table-title>div[style*="display:flex"]{display:grid!important;grid-template-columns:1fr;width:100%;align-items:stretch!important}.admin-table-title>button,.admin-table-title>div[style*="display:flex"] button{width:100%;margin:0}.admin-table-title input,.admin-table-title select{width:100%;max-width:100%;box-sizing:border-box}.admin-cards{width:100%}.metric{min-width:0;overflow-wrap:anywhere}.attendance-hero{width:100%}.attendance-clock{width:100%;min-width:0}.attendance-actions{width:100%;min-width:0}.modal{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right));box-sizing:border-box}.modal-content{width:100%!important;max-width:100%!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}.sub-tabs{max-width:100%;overflow-x:auto;display:flex;-webkit-overflow-scrolling:touch}.sub-tab{flex:0 0 auto}.user-chip{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}}
+        /* Koreksi presisi lintas Safari iOS, Chrome Android, dan desktop */
+        body{box-sizing:border-box}.content,.content *,.modal,.modal *{box-sizing:border-box}.content input,.content select,.content textarea,.modal input,.modal select,.modal textarea{display:block;min-width:0;max-width:100%}.header h1{font-size:clamp(22px,5vw,32px);overflow-wrap:anywhere}.attendance-hero{width:100%;overflow:visible}.attendance-clock{width:auto;max-width:100%;overflow:hidden;border-radius:16px}.attendance-clock strong{font-variant-numeric:tabular-nums;white-space:nowrap}.admin-panel,.attendance-proof,.metric{max-width:100%}.table-scroll{position:relative;contain:inline-size}.sub-tabs{width:100%;max-width:100%}
+        @media(max-width:800px){body{width:100%;max-width:100%;padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}.content{width:auto!important;max-width:100%;margin-left:0;margin-right:0;padding:12px!important}.content.active{display:block}.admin-panel{margin-left:0;margin-right:0}.attendance-hero{display:grid;grid-template-columns:minmax(0,1fr)}.attendance-clock{min-height:170px;padding:20px 12px}.attendance-clock strong{font-size:clamp(28px,10vw,38px)}input[type="date"],input[type="month"]{-webkit-appearance:none;appearance:none;width:100%!important;min-width:0!important}.sub-tabs{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;overflow:visible!important}.sub-tab{display:flex;align-items:center;justify-content:center;width:100%!important;min-width:0!important;min-height:44px;padding:8px 6px!important;margin:0!important;font-size:12px;line-height:1.25;text-align:center;white-space:normal;overflow-wrap:anywhere}.table-scroll{width:100%;max-width:100%;overflow-x:auto!important}.table-scroll table{min-width:640px}.modal-content{overflow-x:hidden}.admin-form>div{width:100%;min-width:0}}
+    </style>
+</head>
+<body>
+    <div id="welcomeScreen" class="welcome-screen" role="dialog" aria-modal="true" aria-label="Selamat datang di ETH Aesthetic">
+        <div class="welcome-glow"></div>
+        <i class="welcome-petal p1"></i><i class="welcome-petal p2"></i><i class="welcome-petal p3"></i><i class="welcome-petal p4"></i>
+        <div class="welcome-card">
+            <div class="welcome-mark">EAC</div>
+            <p class="welcome-eyebrow">Welcome to</p>
+            <h1>ETH AESTHETIC<span>Center</span></h1>
+            <div class="welcome-line"></div>
+            <p class="welcome-copy">Beauty, care, and confidence—managed beautifully in one place.</p>
+            <button type="button" class="welcome-start" onclick="tutupOpening()">Mulai</button>
+        </div>
+    </div>
+    <div id="appDialog" class="app-dialog" role="dialog" aria-modal="true" aria-labelledby="appDialogTitle" aria-describedby="appDialogMessage">
+        <div class="app-dialog-card">
+            <div id="appDialogIcon" class="app-dialog-icon">i</div>
+            <h3 id="appDialogTitle" class="app-dialog-title">Informasi</h3>
+            <p id="appDialogMessage" class="app-dialog-message"></p>
+            <div class="app-dialog-input-wrap">
+                <label for="appDialogInput">Nominal pembayaran (Rp)</label>
+                <input id="appDialogInput" class="app-dialog-input" type="text" inputmode="numeric" autocomplete="off">
+            </div>
+            <div class="app-dialog-actions">
+                <button id="appDialogCancel" type="button" class="app-dialog-cancel">Batal</button>
+                <button id="appDialogConfirm" type="button" class="app-dialog-confirm">Mengerti</button>
+            </div>
+        </div>
+    </div>
+    <div id="authScreen" class="auth-screen"><div class="auth-card"><div class="auth-brand-panel"><div class="auth-monogram">EAC</div><h1>Eth Aesthetic<br>Center</h1><p>Beauty, care, and confidence—managed beautifully in one place.</p></div><div class="auth-form-panel"><span class="auth-eyebrow">Employee Portal</span><h2 id="authTitle">Selamat datang kembali</h2><p id="authHint">Masuk untuk memulai aktivitas kerja hari ini.</p><div id="ownerNameWrap" style="display:none"><label>Nama Owner</label><div class="auth-input-wrap"><span class="auth-input-icon">◇</span><input id="authNama" type="text" autocomplete="name" onkeydown="handleAuthEnter(event)"></div></div><label>Username</label><div class="auth-input-wrap"><span class="auth-input-icon">○</span><input id="authUsername" type="text" autocomplete="username" placeholder="Masukkan username" onkeydown="handleAuthEnter(event)"></div><label>Password</label><div class="auth-input-wrap"><span class="auth-input-icon">◇</span><input id="authPassword" type="password" autocomplete="current-password" placeholder="Masukkan password" onkeydown="handleAuthEnter(event)"></div><button id="authButton" onclick="kirimAuth()">Masuk & Mulai Bekerja</button><p id="authError" style="color:#b64d58;text-align:center"></p><div class="auth-footnote">ETH Aesthetic Center · Sistem operasional internal</div></div></div></div>
+    <button class="menu-toggle" type="button" onclick="toggleSidebar()" aria-label="Buka menu" aria-expanded="false"><span class="menu-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span></button>
+    <div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div id="actionMenuBackdrop" class="action-menu-backdrop" onclick="tutupSemuaMenuAksi()"></div>
+    <div class="header">
+        <h1>ETH AESTHETIC Center</h1>
+        <p>Sistem Kasir & Rekam Medis Terpadu</p>
+    </div>
+
+    <div class="tabs">
+        <div class="sidebar-brand">ETH AESTHETIC<small>Menu Utama</small></div>
+        <div id="userChip" class="user-chip" style="display:none"></div>
+        <button class="tab special-attendance" data-tab="absensi" onclick="switchTab('absensi', this)">Absensi Online</button>
+        <div class="menu-group">
+            <button class="menu-group-button" type="button" onclick="toggleMenuGroup(this)">PAYMENT</button>
+            <div class="menu-children">
+                <button class="tab active" data-tab="kasir" onclick="switchTab('kasir', this)">Kasir Transaksi</button>
+                <button class="tab" data-tab="billing" onclick="switchTab('billing', this)">Billing / Nota</button>
+                <button class="tab" data-tab="hutang" onclick="switchTab('hutang', this)">Kurang Bayar</button>
+            </div>
+        </div>
+        <div class="menu-group">
+            <button class="menu-group-button" type="button" onclick="toggleMenuGroup(this)">DATABASE</button>
+            <div class="menu-children">
+                <button class="tab" data-tab="stok" onclick="switchTab('stok', this)">Stok & Treatment</button>
+                <button class="tab" data-tab="pasien" onclick="switchTab('pasien', this)">Database RM</button>
+            </div>
+        </div>
+        <div class="menu-group">
+            <button class="menu-group-button" type="button" onclick="toggleMenuGroup(this)">ADMINISTRASI</button>
+            <div class="menu-children">
+                <button class="tab" data-tab="laporan" onclick="switchTab('laporan', this)">Laporan Bulanan</button>
+                <button class="tab" data-tab="pengeluaran" onclick="switchTab('pengeluaran', this)">Pengeluaran Operasional</button>
+                <button class="tab" data-tab="aset" onclick="switchTab('aset', this)">Aset</button>
+                <button class="tab" data-tab="karyawan" onclick="switchTab('karyawan', this)">Data Karyawan</button>
+                <button class="tab" data-tab="akses" onclick="switchTab('akses', this)">Pengaturan Hak Akses</button>
+            </div>
+        </div>
+        <button id="logoutButton" class="btn-muted" style="margin:14px;width:calc(100% - 28px)" onclick="logoutAplikasi()">Keluar Akun</button>
+    </div>
+
+    <!-- TAB 1: KASIR -->
+    <div id="kasir" class="content active">
+        <div class="row">
+            <div class="col">
+                <h3>Input Transaksi</h3>
+                <label for="cariPasienKasir">Pasien:</label>
+                <div class="patient-search" id="bungkusCariPasienKasir">
+                    <input type="search" id="cariPasienKasir" placeholder="Ketik nama atau No. RM pasien..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="ubahPencarianPasienKasir()" onfocus="renderHasilPasienKasir()">
+                    <button type="button" id="tombolGantiPasien" class="change-patient-button" onclick="gantiPasienKasir(event)" aria-label="Ganti atau hapus pilihan pasien" title="Ganti pasien">×</button>
+                    <input type="hidden" id="pasienKasirTerpilih">
+                    <div id="hasilPasienKasir" class="patient-search-results"></div>
+                </div>
+                
+                <div class="item-picker-grid">
+                    <div class="item-picker-card">
+                        <label for="cariTreatmentKasir">Treatment:</label>
+                        <input type="search" id="cariTreatmentKasir" placeholder="Cari treatment..." autocomplete="off" oninput="renderPilihanKasir()">
+                        <div id="pilihanTreatmentKasir" class="multi-select-list"></div>
+                    </div>
+                    <div class="item-picker-card product">
+                        <label for="cariProdukKasir">Produk:</label>
+                        <input type="search" id="cariProdukKasir" placeholder="Cari produk..." autocomplete="off" oninput="renderPilihanKasir()">
+                        <div id="pilihanProdukKasir" class="multi-select-list"></div>
+                    </div>
+                </div>
+                <div id="billingModeInfo" class="billing-mode"></div>
+                <button onclick="tambahKeKeranjang()">+ Tambah ke Tagihan</button>
+            </div>
+            <div class="col">
+                <h3>Daftar Tagihan Pasien</h3>
+                <table id="tabelKeranjang">
+                    <thead><tr><th>Item</th><th>Qty</th><th>Subtotal</th><th>Aksi</th></tr></thead>
+                    <tbody id="listKeranjang"></tbody>
+                </table>
+                <div id="aksiPembayaranKasir">
+                    <h3 style="text-align: right; margin-top: 15px;">Total: Rp <span id="totalHarga">0</span></h3>
+                    <button onclick="bayar('simpan')" style="background:#6f9a7c;font-size:16px">SIMPAN BILLING</button>
+                    <div class="payment-summary">
+                        <label for="uangDiterima">Uang yang diberikan pasien (Rp):</label>
+                        <input type="number" id="uangDiterima" min="0" value="0" oninput="renderRingkasanPembayaran()">
+                        <div id="ringkasanPembayaran"></div>
+                    </div>
+                    <button onclick="bayar('lunas')" style="font-size:16px">BAYAR LANGSUNG</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: STOK & TREATMENT -->
+    <div id="stok" class="content">
+        <div class="sub-tabs">
+            <button class="sub-tab active" onclick="switchSubTab('sub-produk', this)">Data Produk (Barang Fisik)</button>
+            <button class="sub-tab" onclick="switchSubTab('sub-treatment', this)">Data Treatment (Jasa)</button>
+        </div>
+
+        <div id="sub-produk" class="sub-content active">
+            <div class="section-action"><button onclick="bukaModalTambah('Produk')">+ Tambah Produk</button></div>
+            <input type="search" id="cariProduk" placeholder="Cari kode atau nama produk..." oninput="filterProduk()">
+            <div class="table-scroll"><table>
+                <thead><tr><th>Kode</th><th>Nama Produk</th><th>Modal</th><th>Harga Jual</th><th>Sisa Stok</th><th>Aksi</th></tr></thead>
+                <tbody id="tableProduk"></tbody>
+            </table></div>
+            <div id="infoProduk" class="data-info"></div>
+        </div>
+
+        <div id="sub-treatment" class="sub-content">
+            <div class="section-action"><button onclick="bukaModalTambah('Treatment')">+ Tambah Treatment</button></div>
+            <input type="search" id="cariTreatment" placeholder="Cari kode atau nama treatment..." oninput="filterTreatment()">
+            <div class="table-scroll"><table>
+                <thead><tr><th>Kode</th><th>Nama Treatment</th><th>Modal</th><th>Harga Jual</th><th>Aksi</th></tr></thead>
+                <tbody id="tableTreatment"></tbody>
+            </table></div>
+            <div id="infoTreatment" class="data-info"></div>
+        </div>
+    </div>
+
+    <!-- TAB 3: PASIEN -->
+    <div id="pasien" class="content">
+        <div class="row">
+            <div class="col">
+                <h3>Daftar Pasien</h3>
+                <div class="section-action"><button onclick="bukaModalTambah('Pasien')">+ Tambah Pasien</button></div>
+                <div class="search-box">
+                    <label for="cariPasien">Cari berdasarkan nama atau No. RM</label>
+                    <input type="search" id="cariPasien" placeholder="Contoh: Bagas atau RM-001" oninput="filterPasien()">
+                    <select id="filterStatusPasien" onchange="filterPasien()">
+                        <option value="">Semua Status</option>
+                        <option value="1">Aktif</option>
+                        <option value="0">Nonaktif</option>
+                    </select>
+                </div>
+                <div class="table-scroll"><table>
+                    <thead><tr><th>No. RM</th><th>Nama Pasien</th><th>Identitas</th><th>Aksi</th></tr></thead>
+                    <tbody id="tablePasien"></tbody>
+                </table></div>
+                <div id="infoPasien" class="data-info"></div>
+            </div>
+            <div class="col">
+                <h3>Riwayat Medis & Transaksi</h3>
+                <div id="historyToolbar" class="history-toolbar">
+                    <div class="date-filter">
+                        <div>
+                            <label for="tanggalHistory">Cari seluruh transaksi berdasarkan tanggal</label>
+                            <input type="date" id="tanggalHistory" onchange="filterHistoryTanggal()">
+                        </div>
+                        <button class="btn-muted" onclick="resetFilterTanggal()">Hapus Filter</button>
+                    </div>
+                </div>
+                <div id="riwayatArea" class="history-panel">
+                    <i>Pilih pasien di tabel sebelah kiri untuk melihat riwayat lengkap.</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT -->
+    <div id="modalEdit" class="modal">
+        <div class="modal-content">
+            <h3 id="modalJudul">Edit Item</h3>
+            <input type="hidden" id="editKode">
+            <label>Nama:</label>
+            <input type="text" id="editNama">
+            <label>Modal (Rp):</label>
+            <input type="number" id="editModal" min="0">
+            <label>Harga Jual (Rp):</label>
+            <input type="number" id="editHarga">
+            
+            <div id="bungkusStok">
+                <label>Stok:</label>
+                <input type="number" id="editStok">
+            </div>
+            
+            <button onclick="simpanEdit()" style="background:#28a745; margin-top:15px;">Simpan Perubahan</button>
+            <button onclick="tutupModal()" style="background:#6c757d;">Batal</button>
+        </div>
+    </div>
+
+    <!-- TAB 4: BILLING / NOTA -->
+    <div id="billing" class="content">
+        <h3>Daftar Billing & Nota</h3>
+        <div class="billing-tools">
+            <input type="search" id="cariBilling" placeholder="Cari nomor nota, No. RM, atau nama pasien..." oninput="filterBilling()">
+            <select id="filterStatusBilling" onchange="filterBilling()">
+                <option value="">Semua Status</option>
+                <option value="Belum Lunas">Belum Lunas</option>
+                <option value="Kurang Bayar">Kurang Bayar</option>
+                <option value="Lunas">Lunas</option>
+            </select>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Nomor Nota</th><th>Waktu</th><th>Pasien</th><th>Total</th><th>Dibayar/Sisa</th><th>Status</th><th>Aksi</th></tr></thead>
+                <tbody id="tableBilling"></tbody>
+            </table>
+        </div>
+        <div id="infoBilling" class="data-info"></div>
+    </div>
+
+    <div id="hutang" class="content">
+        <h3>Daftar Kurang Bayar Pasien</h3>
+        <input type="search" id="cariHutang" placeholder="Cari nomor nota, No. RM, atau nama pasien..." oninput="renderCatatanHutang()">
+        <div class="table-scroll"><table>
+            <thead><tr><th>Nomor Nota</th><th>Pasien</th><th>Total</th><th>Sudah Dibayar</th><th>Sisa Tagihan</th><th>Aksi</th></tr></thead>
+            <tbody id="tableHutang"></tbody>
+        </table></div>
+        <div id="infoHutang" class="data-info"></div>
+    </div>
+
+    <div id="laporan" class="content">
+        <h3>Laporan Bulanan Klinik</h3>
+        <div class="admin-form"><div><label>Periode</label><input id="bulanLaporan" type="month" onchange="loadLaporan()"></div></div>
+        <div id="kartuLaporan" class="admin-cards"></div>
+        <h3>Transaksi Lunas Periode Ini</h3><div class="table-scroll"><table><thead><tr><th>Nota</th><th>Tanggal Lunas</th><th>Pasien</th><th>Omzet</th><th>Modal</th><th>Laba Kotor</th></tr></thead><tbody id="tableLaporan"></tbody></table></div>
+    </div>
+
+    <div id="pengeluaran" class="content">
+        <div class="admin-table-title"><div><h3>Riwayat Pengeluaran</h3><small>Data ini otomatis masuk ke laporan laba bersih.</small></div><div style="display:flex;gap:10px;align-items:end"><div><label>Bulan</label><input id="bulanPengeluaran" type="month" onchange="loadPengeluaran()"></div><button onclick="bukaFormPengeluaran()">+ Tambah Pengeluaran</button></div></div>
+        <div class="search-box"><label for="cariPengeluaran">Cari pengeluaran</label><input type="search" id="cariPengeluaran" placeholder="Cari kategori atau keterangan..." autocomplete="off" oninput="renderPengeluaran()"></div>
+        <div class="table-scroll"><table><thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th>Nominal</th><th>Aksi</th></tr></thead><tbody id="tablePengeluaran"></tbody></table></div>
+        <div id="infoPengeluaran" class="data-info"></div>
+    </div>
+
+    <div id="aset" class="content">
+        <div class="admin-table-title"><div><h3>Register Aset Klinik</h3><small>Mesin treatment, elektronik, furnitur, renovasi, dan kendaraan klinik.</small></div><button onclick="bukaFormAset()">+ Tambah Aset</button></div>
+        <div class="search-box"><label for="cariAset">Cari aset</label><input type="search" id="cariAset" placeholder="Cari kode, nama, kategori, kondisi, atau lokasi..." autocomplete="off" oninput="renderAset()"></div>
+        <div class="sub-tabs"><button class="sub-tab active" onclick="pilihStatusAset(1,this)">Masih Digunakan</button><button class="sub-tab" onclick="pilihStatusAset(0,this)">Diarsipkan</button></div>
+        <div class="table-scroll"><table><thead><tr><th>Kode</th><th>Aset</th><th>Tanggal Beli</th><th>Nilai</th><th>Penyusutan/Bulan</th><th>Kondisi</th><th>Lokasi</th><th>Aksi</th></tr></thead><tbody id="tableAset"></tbody></table></div>
+        <div id="infoAset" class="data-info"></div>
+    </div>
+
+    <div id="karyawan" class="content">
+        <div class="admin-table-title"><div><h3>Daftar Karyawan</h3><small>Data identitas, akun, status kerja, dan history absensi.</small></div><button onclick="bukaFormKaryawan()">+ Tambah Karyawan</button></div><div class="search-box"><label for="cariKaryawan">Cari karyawan</label><input type="search" id="cariKaryawan" placeholder="Cari kode, NIK, nama, username, jabatan, atau nomor HP..." autocomplete="off" oninput="renderKaryawan()"></div><div class="table-scroll"><table><thead><tr><th>Kode</th><th>NIK</th><th>Nama</th><th>Jabatan</th><th>No. HP</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tableKaryawan"></tbody></table></div><div id="infoKaryawan" class="data-info"></div>
+        <div id="historyKaryawanPanel" class="admin-panel" style="display:none"><div class="admin-panel-head"><div><h3 id="judulHistoryKaryawan">History Absensi</h3><p>Rekap masuk, pulang, selfie, dan lokasi karyawan terpilih.</p></div><div><label>Bulan</label><input id="bulanHistoryKaryawan" type="month" onchange="muatHistoryKaryawan()"></div></div><div class="table-scroll"><table><thead><tr><th>Tanggal</th><th>Masuk</th><th>Pulang</th><th>Bukti Masuk</th><th>Bukti Pulang</th><th>Status</th><th>Catatan</th></tr></thead><tbody id="tableHistoryKaryawan"></tbody></table></div></div>
+    </div>
+
+    <div id="absensi" class="content">
+        <div class="attendance-hero"><div class="attendance-clock"><span>Waktu Klinik (WIB)</span><strong id="jamAbsensi">--:--:--</strong><span id="tanggalAbsensi">Memuat tanggal...</span></div><div class="admin-panel" style="margin:0"><div class="admin-panel-head"><div><h3>Absensi Hari Ini</h3><p id="petunjukAbsensi">Ambil selfie dan lokasi terbaru sebelum melakukan absensi.</p></div></div><div class="admin-form"><div id="pilihKaryawanWrap" class="span-2" style="display:none"><label>Pilih karyawan</label><select id="pilihKaryawan" onchange="resetBuktiAbsen()"></select></div><div id="namaKaryawanAbsenWrap" class="span-2"><label>Absensi untuk</label><div id="namaKaryawanAbsen" class="user-chip" style="display:block;margin:0">Akun Anda</div></div><div id="catatanAbsenWrap" class="span-2" style="display:none"><label>Catatan untuk karyawan lain (opsional)</label><input id="absenCatatan" type="text" placeholder="Contoh: Datang terlambat karena kendaraan bermasalah"></div><div id="buktiAbsenCard" class="span-2 attendance-proof"><div id="statusBuktiAbsen" class="proof-status">Selfie dan lokasi belum diambil.</div><button type="button" onclick="mulaiAmbilBukti()" class="btn-muted">Ambil Selfie</button></div><div class="span-2 attendance-actions"><button id="tombolAbsenMasuk" type="button" onclick="catatAbsensi('masuk')" style="background:#6f9a7c" disabled>Absen Masuk</button><button id="tombolAbsenPulang" type="button" onclick="catatAbsensi('pulang')" disabled>Absen Pulang</button></div></div></div></div>
+    </div>
+
+    <div id="modalKameraAbsen" class="modal camera-modal"><div class="modal-content camera-modal-content"><div class="camera-heading"><h3 id="judulKameraAbsen">Ambil Selfie</h3><p>Pastikan wajah terlihat jelas.</p></div><div class="camera-stage"><video id="videoKameraAbsen" autoplay playsinline muted></video><img id="previewKameraAbsen" alt="Preview selfie" style="display:none"><div class="camera-guide"></div><div id="tagLokasiKamera" class="camera-location-tag">⌖ Mencari lokasi…</div></div><canvas id="canvasKameraAbsen" hidden></canvas><input id="inputKameraNative" type="file" accept="image/*" capture="user" hidden onchange="pakaiFileSelfieAbsen(this.files[0])"><div id="pesanKameraAbsen" class="proof-status camera-message"></div><div class="camera-actions"><div class="camera-capture-slot"><button id="tombolJepretAbsen" type="button" onclick="jepretSelfieAbsen()">Ambil Foto</button><button id="tombolUlangAbsen" type="button" onclick="ulangSelfieAbsen()" class="btn-muted is-hidden">Foto Ulang</button><button id="tombolKameraNative" type="button" onclick="document.getElementById('inputKameraNative').click()" class="btn-muted is-hidden">Buka Kamera Ponsel</button></div><button id="tombolPakaiAbsen" type="button" onclick="pakaiSelfieAbsen()" class="is-hidden" style="background:#6f9a7c">Gunakan Selfie</button><button type="button" onclick="tutupKameraAbsen()" class="btn-muted camera-cancel">Batal</button></div></div></div>
+
+    <div id="modalBuktiAbsen" class="modal"><div class="modal-content" style="max-width:470px"><h3 id="judulBuktiAbsen">Bukti Absensi</h3><img id="fotoBuktiAbsen" class="evidence-photo" alt="Selfie bukti absensi"><div id="metaBuktiAbsen" class="evidence-meta"></div><a id="tautanLokasiAbsen" class="button" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:12px">Buka Titik Lokasi</a><button type="button" onclick="tutupBuktiAbsen()" class="btn-muted">Tutup</button></div></div>
+
+    <div id="akses" class="content"><div class="admin-panel"><div class="admin-panel-head"><div><h3>Pengaturan Hak Akses Jabatan</h3><p>Hanya Owner yang dapat mengubah pengaturan ini.</p></div></div><div class="admin-form"><div class="span-2"><label>Pilih jabatan</label><select id="pilihJabatanAkses" onchange="renderHakAkses()"></select></div></div><div id="daftarHakAkses" class="permission-grid" style="margin-top:15px"></div><button onclick="simpanHakAkses()" style="margin-top:16px">Simpan Hak Akses Jabatan</button></div></div>
+
+    <div id="modalAdmin" class="modal"><div class="modal-content" style="max-width:720px"><h3 id="judulModalAdmin">Tambah Data</h3><input id="adminEditId" type="hidden"><input id="adminJenis" type="hidden">
+        <div id="formPengeluaranAdmin" class="admin-form"><div><label>Tanggal</label><input id="keluarTanggal" type="date"></div><div><label>Kategori</label><select id="keluarKategori"><option>Operasional</option><option>Gaji</option><option>Sewa</option><option>Listrik & Internet</option><option>Marketing</option><option>Perawatan</option><option>Lainnya</option></select></div><div class="span-2"><label>Keterangan</label><input id="keluarKet" type="text"></div><div><label>Nominal (Rp)</label><input id="keluarNominal" type="number" min="0"></div></div>
+        <div id="formAsetAdmin" class="admin-form"><div><label>Nama aset</label><input id="asetNama" type="text"></div><div><label>Kategori</label><select id="asetKategori"><option>Alat Treatment</option><option>Elektronik</option><option>Furnitur</option><option>Kendaraan</option><option>Renovasi</option><option>Lainnya</option></select></div><div><label>Tanggal beli</label><input id="asetTanggal" type="date"></div><div><label>Harga perolehan</label><input id="asetHarga" type="number" min="0"></div><div><label>Nilai sisa</label><input id="asetSisa" type="number" min="0"></div><div><label>Masa manfaat (bulan)</label><input id="asetManfaat" type="number" min="1"></div><div><label>Kondisi</label><select id="asetKondisi"><option>Baik</option><option>Perlu Perawatan</option><option>Rusak Ringan</option><option>Rusak Berat</option></select></div><div><label>Lokasi</label><input id="asetLokasi" type="text"></div><div class="span-2"><label>Keterangan</label><textarea id="asetKeterangan" rows="2"></textarea></div></div>
+        <div id="formKaryawanAdmin" class="admin-form"><div><label>NIK</label><input id="karyawanNik" type="text" inputmode="numeric" maxlength="16"></div><div><label>Nama lengkap</label><input id="karyawanNama" type="text"></div><div><label>Nama panggilan / username</label><input id="karyawanPanggilan" type="text" placeholder="Contoh: Vania"></div><div><label>Tempat lahir</label><input id="karyawanTempatLahir" type="text"></div><div><label>Tanggal lahir</label><input id="karyawanTanggalLahir" type="date"></div><div><label>Jenis kelamin</label><select id="karyawanJenisKelamin"><option value="">Pilih</option><option>Perempuan</option><option>Laki-laki</option></select></div><div><label>Nomor HP</label><input id="karyawanHp" type="tel"></div><div><label>Email</label><input id="karyawanEmail" type="email"></div><div><label>Jabatan</label><input id="karyawanJabatan" type="text"></div><div><label>Tanggal masuk</label><input id="karyawanTanggalMasuk" type="date"></div><div><label>Status kerja</label><select id="karyawanStatusKerja"><option>Karyawan Tetap</option><option>Kontrak</option><option>Harian</option><option>Magang</option></select></div><div class="span-2"><label>Alamat</label><textarea id="karyawanAlamat" rows="2"></textarea></div><div><label>Kontak darurat</label><input id="karyawanDaruratNama" type="text"></div><div><label>HP kontak darurat</label><input id="karyawanDaruratHp" type="tel"></div><div><label>NPWP</label><input id="karyawanNpwp" type="text"></div><div><label>BPJS Kesehatan</label><input id="karyawanBpjsKes" type="text"></div><div><label>BPJS Ketenagakerjaan</label><input id="karyawanBpjsTk" type="text"></div><div><label>Bank</label><input id="karyawanBank" type="text"></div><div><label>Nomor rekening</label><input id="karyawanRekening" type="text"></div><div id="passwordAwalWrap" class="span-2"><label>Password awal</label><input id="karyawanPassword" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter"></div></div>
+        <div id="formResetPasswordAdmin" class="admin-form"><div class="span-2"><label>Password baru</label><input id="resetPasswordBaru" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter"></div><div class="span-2"><label>Ulangi password baru</label><input id="resetPasswordUlang" type="password" autocomplete="new-password"></div></div>
+        <button onclick="simpanModalAdmin()" style="margin-top:16px">Simpan</button><button class="btn-muted" onclick="tutupModalAdmin()">Batal</button>
+    </div></div>
+
+    <!-- MODAL TAMBAH DATA -->
+    <div id="modalTambah" class="modal">
+        <div class="modal-content">
+            <h3 id="judulTambah">Tambah Data</h3>
+            <input type="hidden" id="jenisTambah">
+            <input type="hidden" id="editPasienNoRm">
+
+            <label for="tambahNama">Nama:</label>
+            <input type="text" id="tambahNama" placeholder="Masukkan nama">
+
+            <div id="fieldItemTambah">
+                <label for="tambahModal">Modal (Rp):</label>
+                <input type="number" id="tambahModal" min="0" placeholder="0">
+                <label for="tambahHarga">Harga Jual (Rp):</label>
+                <input type="number" id="tambahHarga" min="0" placeholder="0">
+                <p class="form-note">Harga jual dipakai di Kasir dan nota pasien. Modal hanya untuk data internal klinik.</p>
+                <div id="fieldStokTambah">
+                    <label for="tambahStok">Stok awal:</label>
+                    <input type="number" id="tambahStok" min="0" value="0">
+                </div>
+            </div>
+
+            <div id="fieldPasienTambah" style="display:none">
+                <label for="tambahNik">NIK <span class="result-count">(opsional)</span>:</label>
+                <input type="text" inputmode="numeric" maxlength="16" id="tambahNik" placeholder="16 digit, boleh dikosongkan">
+                <div class="form-grid">
+                    <div><label for="tambahTanggalLahir">Tanggal Lahir:</label><input type="date" id="tambahTanggalLahir"></div>
+                    <div><label for="tambahJenisKelamin">Jenis Kelamin:</label><select id="tambahJenisKelamin"><option value="">Pilih (opsional)</option><option value="Perempuan">Perempuan</option><option value="Laki-laki">Laki-laki</option></select></div>
+                </div>
+                <label for="tambahNoHp">Nomor HP:</label>
+                <input type="tel" id="tambahNoHp" placeholder="08xxxxxxxxxx">
+                <div class="form-grid">
+                    <div><label for="tambahRt">RT:</label><input type="text" inputmode="numeric" id="tambahRt" placeholder="001"></div>
+                    <div><label for="tambahRw">RW:</label><input type="text" inputmode="numeric" id="tambahRw" placeholder="002"></div>
+                </div>
+                <label for="tambahDesa">Desa/Kelurahan:</label>
+                <input type="text" id="tambahDesa" placeholder="Nama desa atau kelurahan">
+                <label for="tambahKecamatan">Kecamatan:</label>
+                <input type="text" id="tambahKecamatan" placeholder="Nama kecamatan">
+                <label for="tambahKota">Kota/Kabupaten:</label>
+                <input type="text" id="tambahKota" placeholder="Contoh: Kabupaten Pati">
+                <label for="tambahProvinsi">Provinsi:</label>
+                <input type="text" id="tambahProvinsi" placeholder="Contoh: Jawa Tengah">
+                <p class="form-note">NIK dan rincian alamat boleh dikosongkan jika pasien tidak bersedia memberikan data.</p>
+            </div>
+
+            <button onclick="simpanTambah()" style="background:#6f9a7c;margin-top:15px">Simpan</button>
+            <button onclick="tutupModalTambah()" class="btn-muted">Batal</button>
+        </div>
+    </div>
+
+    <div id="modalProfil" class="modal">
+        <div class="modal-content" style="max-width:560px">
+            <h3>Profil Pasien</h3>
+            <div id="isiProfilPasien"></div>
+            <button onclick="tutupProfilPasien()" class="btn-muted" style="margin-top:15px">Tutup</button>
+        </div>
+    </div>
+
+    <div id="modalNota" class="modal">
+        <div class="modal-content" style="max-width:520px">
+            <h3>Preview Nota</h3>
+            <iframe id="frameNota" title="Preview nota" style="width:100%;height:520px;border:1px solid var(--line);border-radius:8px;background:white"></iframe>
+            <div class="nota-actions">
+                <button onclick="cetakFrameNota()" style="background:#6f9a7c">Cetak</button>
+                <button onclick="tutupPreviewNota()" class="btn-muted">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dataBarang = [];
+        let dataPasien = [];
+        let keranjang = []; // Menyimpan array dengan format: {kode, nama, harga, tipe, qty}
+        let historyPasien = [];
+        let pasienAktif = null;
+        let dataBilling = [];
+        let billingAktifId = null;
+        let billingAktifDibayar = 0;
+        let pilihanItemKasir = new Set();
+        let statusKerjaSudahDipulihkan = false;
+        let statusKerjaBolehDisimpan = false;
+        let previewNotaSudahDipulihkan = false;
+        let penyelesaiDialog = null;
+        let openingAwalAktif = false;
+        let authModeSetup = false;
+        let penggunaLogin = null;
+        let izinLogin = new Set();
+        let dataAksesJabatan = null;
+        let karyawanHistoryAktif = null;
+        let dataAsetAdmin = [], dataPengeluaranAdmin = [], dataKaryawanAdmin = [], statusAsetAktif = 1;
+        const fieldDraft = [
+            'cariPasienKasir','pasienKasirTerpilih','cariTreatmentKasir','cariProdukKasir','uangDiterima',
+            'cariProduk','cariTreatment','cariPasien','filterStatusPasien','tanggalHistory',
+            'cariBilling','filterStatusBilling','cariHutang',
+            'editKode','editNama','editModal','editHarga','editStok',
+            'jenisTambah','editPasienNoRm','tambahNama','tambahModal','tambahHarga','tambahStok','tambahNik',
+            'tambahTanggalLahir','tambahJenisKelamin','tambahNoHp','tambahRt','tambahRw','tambahDesa',
+            'tambahKecamatan','tambahKota','tambahProvinsi',
+            'bulanLaporan','bulanPengeluaran','bulanHistoryKaryawan','cariPengeluaran','cariAset','cariKaryawan',
+            'adminEditId','adminJenis','keluarTanggal','keluarKategori','keluarKet','keluarNominal',
+            'asetNama','asetKategori','asetTanggal','asetHarga','asetSisa','asetManfaat','asetKondisi','asetLokasi','asetKeterangan',
+            'karyawanNik','karyawanNama','karyawanPanggilan','karyawanTempatLahir','karyawanTanggalLahir',
+            'karyawanJenisKelamin','karyawanHp','karyawanEmail','karyawanJabatan','karyawanTanggalMasuk',
+            'karyawanStatusKerja','karyawanAlamat','karyawanDaruratNama','karyawanDaruratHp','karyawanNpwp',
+            'karyawanBpjsKes','karyawanBpjsTk','karyawanBank','karyawanRekening','karyawanPassword',
+            'resetPasswordBaru','resetPasswordUlang'
+        ];
+        const fieldFilterNonKasir = [
+            'cariProduk','cariTreatment','cariPasien','filterStatusPasien','tanggalHistory',
+            'cariBilling','filterStatusBilling','cariHutang','cariPengeluaran','cariAset','cariKaryawan'
+        ];
+
+        function tipeNotifikasiOtomatis(pesan) {
+            const teks = String(pesan || '').toLowerCase();
+            if(teks.includes('gagal') || teks.includes('tidak valid') || teks.includes('tidak ditemukan')) return 'error';
+            if(teks.includes('berhasil') || teks.includes('sukses') || teks.includes('tersimpan')) return 'success';
+            if(teks.includes('hapus') || teks.includes('nonaktif') || teks.includes('belum cukup') || teks.includes('terlebih dahulu')) return 'warning';
+            return 'info';
+        }
+
+        function bukaDialogAplikasi(pesan, opsi = {}) {
+            const dialog = document.getElementById('appDialog');
+            const tipe = opsi.tipe || tipeNotifikasiOtomatis(pesan);
+            const judulBawaan = {success:'Berhasil', error:'Terjadi Kendala', warning:'Perhatian', info:'Informasi'};
+            const ikon = {success:'✓', error:'!', warning:'!', info:'i'};
+            if(penyelesaiDialog) penyelesaiDialog(null);
+            dialog.className = `app-dialog open ${tipe}${opsi.konfirmasi ? ' confirm' : ''}${opsi.input ? ' with-input' : ''}`;
+            document.getElementById('appDialogIcon').textContent = ikon[tipe] || 'i';
+            document.getElementById('appDialogTitle').textContent = opsi.judul || judulBawaan[tipe] || 'Informasi';
+            document.getElementById('appDialogMessage').textContent = String(pesan || '');
+            const input = document.getElementById('appDialogInput');
+            input.value = opsi.nilaiAwal ?? '';
+            const tombolBatal = document.getElementById('appDialogCancel');
+            const tombolKonfirmasi = document.getElementById('appDialogConfirm');
+            tombolBatal.textContent = opsi.teksBatal || 'Batal';
+            tombolKonfirmasi.textContent = opsi.teksKonfirmasi || (opsi.konfirmasi || opsi.input ? 'Lanjutkan' : 'Mengerti');
+            document.body.classList.add('modal-open');
+
+            return new Promise(resolve => {
+                penyelesaiDialog = resolve;
+                const selesai = hasil => {
+                    dialog.className = 'app-dialog';
+                    document.body.classList.remove('modal-open');
+                    penyelesaiDialog = null;
+                    resolve(hasil);
+                };
+                tombolBatal.onclick = () => selesai(null);
+                tombolKonfirmasi.onclick = () => selesai(opsi.input ? input.value : true);
+                input.onkeydown = event => {
+                    if(event.key === 'Enter') { event.preventDefault(); tombolKonfirmasi.click(); }
+                };
+                setTimeout(() => (opsi.input ? input : tombolKonfirmasi).focus(), 80);
+            });
+        }
+
+        function notifikasiAplikasi(pesan, opsi = {}) {
+            return bukaDialogAplikasi(pesan, opsi);
+        }
+
+        function konfirmasiAplikasi(pesan, opsi = {}) {
+            return bukaDialogAplikasi(pesan, {...opsi, konfirmasi:true, tipe:opsi.tipe || 'warning'});
+        }
+
+        function inputNominalAplikasi(pesan, nilaiAwal = '') {
+            return bukaDialogAplikasi(pesan, {
+                input:true, tipe:'info', judul:'Tambah Pembayaran', nilaiAwal,
+                teksKonfirmasi:'Simpan Pembayaran'
+            });
+        }
+
+        // Semua alert bawaan browser diarahkan ke dialog aplikasi agar
+        // alamat IP/domain tidak lagi tampil pada notifikasi.
+        window.alert = pesan => { notifikasiAplikasi(pesan); };
+
+        function simpanStatusKerja() {
+            // Jangan sampai tampilan kosong ketika aplikasi baru mulai
+            // menimpa draft/filter yang belum selesai dipulihkan.
+            if(!statusKerjaBolehDisimpan) return;
+            const nilai = {};
+            fieldDraft.forEach(id => {
+                const elemen = document.getElementById(id);
+                if(elemen) nilai[id] = elemen.value;
+            });
+            const status = {
+                nilai,
+                keranjang,
+                pilihanItemKasir: [...pilihanItemKasir],
+                billingAktifId,
+                billingAktifDibayar,
+                pasienAktif,
+                subTab: document.querySelector('.sub-content.active')?.id || 'sub-produk',
+                modalTambah: document.getElementById('modalTambah')?.style.display === 'block',
+                modalEdit: document.getElementById('modalEdit')?.style.display === 'block',
+                judulEdit: document.getElementById('modalJudul')?.innerText || 'Edit Item',
+                modalAdmin: document.getElementById('modalAdmin')?.style.display === 'block',
+                judulModalAdmin: document.getElementById('judulModalAdmin')?.innerText || 'Tambah Data',
+                statusAsetAktif,
+                karyawanHistoryAktif
+            };
+            try { sessionStorage.setItem('ethStatusKerja', JSON.stringify(status)); } catch(error) {}
+        }
+
+        function pulihkanStatusKerja() {
+            if(statusKerjaSudahDipulihkan) return;
+            statusKerjaSudahDipulihkan = true;
+            let status;
+            try { status = JSON.parse(sessionStorage.getItem('ethStatusKerja') || 'null'); } catch(error) { status = null; }
+            if(!status) {
+                statusKerjaBolehDisimpan = true;
+                return;
+            }
+
+            Object.entries(status.nilai || {}).forEach(([id, value]) => {
+                const elemen = document.getElementById(id);
+                if(elemen) elemen.value = value ?? '';
+            });
+            perbaruiTombolGantiPasien();
+            perbaruiSemuaTombolHapusPencarian();
+            keranjang = Array.isArray(status.keranjang) ? status.keranjang : [];
+            pilihanItemKasir = new Set(Array.isArray(status.pilihanItemKasir) ? status.pilihanItemKasir : []);
+            billingAktifId = status.billingAktifId || null;
+            billingAktifDibayar = Number(status.billingAktifDibayar || 0);
+            pasienAktif = status.pasienAktif || null;
+            statusAsetAktif = Number(status.statusAsetAktif ?? 1);
+            karyawanHistoryAktif = status.karyawanHistoryAktif || null;
+            document.querySelectorAll('#aset .sub-tab').forEach((tombol,index)=>tombol.classList.toggle('active',statusAsetAktif===1?index===0:index===1));
+
+            const subTab = document.getElementById(status.subTab);
+            const tombolSub = [...document.querySelectorAll('.sub-tab')].find(t => t.getAttribute('onclick')?.includes(`'${status.subTab}'`));
+            if(subTab && tombolSub) switchSubTab(status.subTab, tombolSub);
+
+            renderPilihanKasir();
+            renderKeranjang();
+            filterProduk();
+            filterTreatment();
+            filterPasien();
+
+            if(status.modalAdmin) {
+                const jenis = document.getElementById('adminJenis').value;
+                ['formPengeluaranAdmin','formAsetAdmin','formKaryawanAdmin','formResetPasswordAdmin'].forEach(x=>document.getElementById(x).style.display='none');
+                const formAktif = document.getElementById(`form${jenis}Admin`);
+                if(formAktif) formAktif.style.display='grid';
+                document.getElementById('judulModalAdmin').innerText=status.judulModalAdmin||'Tambah Data';
+                document.getElementById('passwordAwalWrap').style.display=jenis==='Karyawan'&& !document.getElementById('adminEditId').value?'block':'none';
+                document.getElementById('modalAdmin').style.display='block';
+                posisikanModalAdminKeAtas();
+                document.body.classList.add('modal-open');
+            } else if(status.modalTambah) {
+                const jenis = document.getElementById('jenisTambah').value;
+                const pasien = jenis === 'Pasien' || jenis === 'EditPasien';
+                document.getElementById('judulTambah').innerText = jenis === 'EditPasien'
+                    ? `Edit Pasien — ${document.getElementById('editPasienNoRm').value}`
+                    : `Tambah ${jenis}`;
+                document.getElementById('fieldItemTambah').style.display = pasien ? 'none' : 'block';
+                document.getElementById('fieldPasienTambah').style.display = pasien ? 'block' : 'none';
+                document.getElementById('fieldStokTambah').style.display = jenis === 'Produk' ? 'block' : 'none';
+                document.getElementById('modalTambah').style.display = 'block';
+                document.body.classList.add('modal-open');
+            } else if(status.modalEdit) {
+                document.getElementById('modalJudul').innerText = status.judulEdit || 'Edit Item';
+                document.getElementById('bungkusStok').style.display = String(status.judulEdit || '').includes('Treatment') ? 'none' : 'block';
+                document.getElementById('modalEdit').style.display = 'block';
+                document.body.classList.add('modal-open');
+            }
+            statusKerjaBolehDisimpan = true;
+        }
+
+        function switchTab(tabId, element, bersihkanFilter = true) {
+            const menuSebelumnya = document.querySelector('.content.active')?.id;
+            if(bersihkanFilter && menuSebelumnya && menuSebelumnya !== tabId) kosongkanFilterNonKasir();
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+            try { localStorage.setItem('ethMenuAktif', tabId); } catch(error) {}
+            if(tabId !== 'kasir') loadData(); 
+            if(tabId === 'billing') loadBilling();
+            if(tabId === 'hutang') loadBilling();
+            if(tabId === 'laporan') loadLaporan();
+            if(tabId === 'pengeluaran') loadPengeluaran();
+            if(tabId === 'aset') loadAset();
+            if(tabId === 'karyawan') loadKaryawan();
+            if(tabId === 'absensi') loadAbsensi();
+            if(tabId === 'akses') loadHakAkses();
+            closeSidebar();
+        }
+
+        function kosongkanFilterNonKasir() {
+            fieldFilterNonKasir.forEach(id => {
+                const elemen = document.getElementById(id);
+                if(!elemen || elemen.value === '') return;
+                elemen.value = '';
+                const jenisEvent = elemen.tagName === 'SELECT' || elemen.type === 'date' ? 'change' : 'input';
+                elemen.dispatchEvent(new Event(jenisEvent, {bubbles:true}));
+            });
+            perbaruiSemuaTombolHapusPencarian();
+            simpanStatusKerja();
+        }
+
+        function mulaiAplikasi() {
+            tampilkanOpeningAwal();
+            pasangTombolHapusPencarian();
+            const daftarMenu = ['kasir', 'billing', 'hutang', 'stok', 'pasien', 'laporan', 'pengeluaran', 'aset', 'karyawan', 'absensi', 'akses'];
+            let menuTersimpan = 'kasir';
+            try {
+                const nilai = localStorage.getItem('ethMenuAktif');
+                if(daftarMenu.includes(nilai)) menuTersimpan = nilai;
+            } catch(error) {}
+
+            const tombol = document.querySelector(`.tab[data-tab="${menuTersimpan}"]`);
+            if(tombol) {
+                // Membuka kembali menu terakhir setelah refresh bukan perpindahan menu pengguna.
+                switchTab(menuTersimpan, tombol, false);
+                if(menuTersimpan === 'kasir') loadData();
+            } else {
+                loadData();
+            }
+        }
+
+        function tampilkanOpeningAwal() {
+            let sudahTampil = false;
+            try { sudahTampil = sessionStorage.getItem('ethWelcomeSudahTampil') === '1'; } catch(error) {}
+            const navigasi = typeof performance.getEntriesByType === 'function'
+                ? performance.getEntriesByType('navigation')[0]
+                : null;
+            const adalahRefresh = navigasi
+                ? navigasi.type === 'reload'
+                : Boolean(performance.navigation && performance.navigation.type === 1);
+            const sudahTampilDiHalaman = Boolean(history.state && history.state.ethWelcomeSudahTampil);
+
+            // Refresh harus selalu melewati opening, termasuk refresh pertama
+            // pada Safari iOS, Chrome Android, dan mode aplikasi/PWA.
+            if(adalahRefresh || sudahTampil || sudahTampilDiHalaman) {
+                try { sessionStorage.setItem('ethWelcomeSudahTampil', '1'); } catch(error) {}
+                try { history.replaceState({...history.state, ethWelcomeSudahTampil:true}, ''); } catch(error) {}
+                return;
+            }
+            try { sessionStorage.setItem('ethWelcomeSudahTampil', '1'); } catch(error) {}
+            try { history.replaceState({...history.state, ethWelcomeSudahTampil:true}, ''); } catch(error) {}
+            const opening = document.getElementById('welcomeScreen');
+            openingAwalAktif = true;
+            opening.classList.add('active');
+            document.body.classList.add('welcome-open');
+        }
+
+        function tutupOpening() {
+            const opening = document.getElementById('welcomeScreen');
+            if(!opening || !opening.classList.contains('active')) return;
+            try { sessionStorage.setItem('ethWelcomeSudahTampil', '1'); } catch(error) {}
+            try { history.replaceState({...history.state, ethWelcomeSudahTampil:true}, ''); } catch(error) {}
+            if(openingAwalAktif) {
+                const tombolKasir = document.querySelector('.tab[data-tab="kasir"]:not([style*="display: none"])');
+                const tombolTujuan = tombolKasir || [...document.querySelectorAll('.tab')].find(t=>t.style.display!=='none');
+                if(tombolTujuan) switchTab(tombolTujuan.dataset.tab, tombolTujuan, false);
+                openingAwalAktif = false;
+            }
+            opening.classList.add('closing');
+            setTimeout(() => {
+                opening.classList.remove('active', 'closing');
+                document.body.classList.remove('welcome-open');
+            }, 550);
+        }
+
+        function pasangTombolHapusPencarian() {
+            document.querySelectorAll('input[type="search"]').forEach(input => {
+                if(input.id === 'cariPasienKasir' || input.closest('.search-clear-wrap')) return;
+                const pembungkus = document.createElement('div');
+                pembungkus.className = 'search-clear-wrap';
+                input.parentNode.insertBefore(pembungkus, input);
+                pembungkus.appendChild(input);
+                const tombol = document.createElement('button');
+                tombol.type = 'button';
+                tombol.className = 'search-clear-button';
+                tombol.textContent = '×';
+                tombol.setAttribute('aria-label', `Hapus pencarian ${input.placeholder || input.id}`);
+                tombol.addEventListener('click', event => hapusPencarian(event, input.id));
+                pembungkus.appendChild(tombol);
+            });
+            perbaruiSemuaTombolHapusPencarian();
+        }
+
+        function perbaruiSemuaTombolHapusPencarian() {
+            document.querySelectorAll('.search-clear-wrap').forEach(pembungkus => {
+                const input = pembungkus.querySelector('input[type="search"]');
+                const tombol = pembungkus.querySelector('.search-clear-button');
+                if(input && tombol) tombol.classList.toggle('visible', Boolean(input.value.trim()));
+            });
+        }
+
+        function hapusPencarian(event, inputId) {
+            event.preventDefault();
+            event.stopPropagation();
+            const input = document.getElementById(inputId);
+            input.value = '';
+            input.dispatchEvent(new Event('input', {bubbles:true}));
+            input.dispatchEvent(new Event('change', {bubbles:true}));
+            input.blur();
+            perbaruiSemuaTombolHapusPencarian();
+            simpanStatusKerja();
+        }
+
+        function toggleSidebar() {
+            const terbuka = document.querySelector('.tabs').classList.toggle('open');
+            if(terbuka) {
+                const tabAktif = document.querySelector('.tab.active');
+                const grupAktif = tabAktif?.closest('.menu-group');
+                document.querySelectorAll('.menu-group').forEach(item => item.classList.toggle('open', item === grupAktif));
+            }
+            document.getElementById('sidebarOverlay').classList.toggle('open', terbuka);
+            document.body.classList.toggle('sidebar-open', terbuka);
+            const tombol = document.querySelector('.menu-toggle');
+            tombol.classList.toggle('is-open', terbuka);
+            tombol.setAttribute('aria-label', terbuka ? 'Tutup menu' : 'Buka menu');
+            tombol.setAttribute('aria-expanded', String(terbuka));
+        }
+
+        function closeSidebar() {
+            document.querySelector('.tabs').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+            document.body.classList.remove('sidebar-open');
+            const tombol = document.querySelector('.menu-toggle');
+            tombol.classList.remove('is-open');
+            tombol.setAttribute('aria-label', 'Buka menu');
+            tombol.setAttribute('aria-expanded', 'false');
+        }
+
+        function toggleMenuGroup(button) {
+            const grup = button.closest('.menu-group');
+            const akanDibuka = !grup.classList.contains('open');
+            document.querySelectorAll('.menu-group').forEach(item => item.classList.remove('open'));
+            if(akanDibuka) grup.classList.add('open');
+        }
+
+        function switchSubTab(subId, element) {
+            document.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(subId).classList.add('active');
+            element.classList.add('active');
+            simpanStatusKerja();
+        }
+
+        function loadData() {
+            fetch('/api/data')
+                .then(res => res.json())
+                .then(data => {
+                    dataBarang = data.barang;
+                    dataPasien = data.pasien;
+                    renderPilihanKasir();
+                    filterProduk();
+                    filterTreatment();
+                    renderPasien(dataPasien);
+                    pulihkanStatusKerja();
+                    pulihkanPreviewNota();
+                })
+                .catch(() => alert('Data gagal dimuat. Periksa server aplikasi.'));
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>'"]/g, char => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[char]);
+        }
+
+        function tutupSemuaMenuAksi(kecuali = null) {
+            document.querySelectorAll('.action-menu.open').forEach(menu => {
+                if(menu === kecuali) return;
+                const panel = menu._actionPanel;
+                menu.classList.remove('open');
+                if(panel) {
+                    panel.classList.remove('open');
+                    panel.removeAttribute('style');
+                    menu.appendChild(panel);
+                }
+            });
+            if(!kecuali) document.getElementById('actionMenuBackdrop').classList.remove('open');
+        }
+
+        function toggleMenuAksi(event, tombol) {
+            event.stopPropagation();
+            const menu = tombol.closest('.action-menu');
+            const akanBuka = !menu.classList.contains('open');
+            if(!akanBuka) {
+                tutupSemuaMenuAksi();
+                return;
+            }
+            tutupSemuaMenuAksi();
+            const panel = menu._actionPanel || menu.querySelector('.action-menu-panel');
+            menu._actionPanel = panel;
+            menu.classList.add('open');
+            document.body.appendChild(panel);
+            panel.classList.add('open');
+            document.getElementById('actionMenuBackdrop').classList.add('open');
+            if(window.matchMedia('(max-width:800px)').matches) return;
+            const posisi = tombol.getBoundingClientRect();
+            const kiri = Math.max(8, Math.min(posisi.right - panel.offsetWidth, window.innerWidth - panel.offsetWidth - 8));
+            let atas = posisi.bottom + 5;
+            if(atas + panel.offsetHeight > window.innerHeight - 8) atas = Math.max(8, posisi.top - panel.offsetHeight - 5);
+            panel.style.left = `${kiri}px`;
+            panel.style.top = `${atas}px`;
+        }
+
+        function formatTanggalPasien(value) {
+            if(!value) return '-';
+            const tanggal = new Date(String(value).slice(0, 10) + 'T00:00:00');
+            return Number.isNaN(tanggal.getTime()) ? '-' : tanggal.toLocaleDateString('id-ID', {day:'2-digit', month:'long', year:'numeric'});
+        }
+
+        function formatTanggalKasir(value) {
+            if(!value) return '-';
+            const tanggal = new Date(String(value).slice(0, 10) + 'T00:00:00');
+            return Number.isNaN(tanggal.getTime()) ? '-' : tanggal.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+        }
+
+        function labelPasienKasir(p) {
+            const pembeda = [p.desa || '-', p.kecamatan || '-', p.kota || '-', p.no_hp ? `…${String(p.no_hp).slice(-4)}` : '-', formatTanggalKasir(p.tanggal_lahir)].join(' | ');
+            return `${p.no_rm} - ${p.nama} | ${pembeda}`;
+        }
+
+        function ubahPencarianPasienKasir() {
+            document.getElementById('pasienKasirTerpilih').value = '';
+            perbaruiTombolGantiPasien();
+            renderHasilPasienKasir();
+        }
+
+        function perbaruiTombolGantiPasien() {
+            const adaIsi = Boolean(document.getElementById('cariPasienKasir').value.trim());
+            document.getElementById('tombolGantiPasien').classList.toggle('visible', adaIsi);
+        }
+
+        function gantiPasienKasir(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('cariPasienKasir').value = '';
+            document.getElementById('pasienKasirTerpilih').value = '';
+            perbaruiTombolGantiPasien();
+            renderHasilPasienKasir();
+            document.getElementById('cariPasienKasir').blur();
+            simpanStatusKerja();
+        }
+
+        function renderHasilPasienKasir() {
+            const input = document.getElementById('cariPasienKasir');
+            const hasilEl = document.getElementById('hasilPasienKasir');
+            const kata = document.getElementById('pasienKasirTerpilih').value ? '' : input.value.trim().toLowerCase();
+            const hasil = dataPasien.filter(p => Number(p.aktif) === 1 &&
+                (!kata || [p.no_rm, p.nama, p.desa, p.kecamatan, p.kota, p.no_hp, p.tanggal_lahir].some(v => String(v || '').toLowerCase().includes(kata)))
+            ).slice(0, 12);
+            hasilEl.innerHTML = hasil.length ? hasil.map(p => {
+                const detail = [p.desa || '-', p.kecamatan || '-', p.kota || '-', p.no_hp ? `…${String(p.no_hp).slice(-4)}` : '-', formatTanggalKasir(p.tanggal_lahir)].join(' | ');
+                return `<button type="button" class="patient-option" onclick="pilihPasienKasir('${encodeURIComponent(p.no_rm)}')"><span class="patient-option-name">${escapeHtml(p.no_rm)} — ${escapeHtml(p.nama)}</span><span class="patient-option-detail">${escapeHtml(detail)}</span></button>`;
+            }).join('') : '<div class="multi-select-empty">Pasien aktif tidak ditemukan.</div>';
+            hasilEl.classList.add('open');
+        }
+
+        function pilihPasienKasir(noRmEncoded) {
+            const noRm = decodeURIComponent(noRmEncoded);
+            const p = dataPasien.find(item => item.no_rm === noRm && Number(item.aktif) === 1);
+            if(!p) return;
+            document.getElementById('pasienKasirTerpilih').value = p.no_rm;
+            document.getElementById('cariPasienKasir').value = labelPasienKasir(p);
+            perbaruiTombolGantiPasien();
+            document.getElementById('hasilPasienKasir').classList.remove('open');
+            simpanStatusKerja();
+        }
+
+        function renderPasien(daftar) {
+            let tbody = daftar.map(p => {
+                const aktif = Number(p.aktif) === 1;
+                const lokasi = [p.desa, p.kecamatan].filter(Boolean).join(', ') || '-';
+                const hp = p.no_hp ? `…${String(p.no_hp).slice(-4)}` : '-';
+                return `<tr>
+                <td>${escapeHtml(p.no_rm)}</td><td>${escapeHtml(p.nama)}<br><span class="status-badge ${aktif ? 'status-lunas' : 'status-belum'}">${aktif ? 'Aktif' : 'Nonaktif'}</span></td>
+                <td class="patient-identity">Lahir: ${escapeHtml(formatTanggalPasien(p.tanggal_lahir))}<br>${escapeHtml(p.jenis_kelamin || '-')} · HP ${escapeHtml(hp)}<br>${escapeHtml(lokasi)}</td>
+                <td><div class="action-menu"><button type="button" class="action-gear" aria-label="Buka aksi pasien" title="Aksi" onclick="toggleMenuAksi(event,this)">⚙</button><div class="action-menu-panel"><button class="btn-small" onclick="lihatProfilPasien('${encodeURIComponent(p.no_rm)}')">Profil</button><button class="btn-small btn-warning" onclick="bukaEditPasien('${encodeURIComponent(p.no_rm)}')">Edit</button><button class="btn-small" onclick="lihatRiwayat('${encodeURIComponent(p.no_rm)}', '${encodeURIComponent(p.nama)}')">Lihat RM</button><button class="btn-small ${aktif ? 'btn-muted' : ''}" style="${aktif ? '' : 'background:#6f9a7c'}" onclick="ubahStatusPasien('${encodeURIComponent(p.no_rm)}','${encodeURIComponent(p.nama)}',${!aktif})">${aktif ? 'Nonaktifkan' : 'Aktifkan'}</button></div></div></td>
+            </tr>`;
+            }).join('');
+            if(!tbody) tbody = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">Pasien tidak ditemukan.</td></tr>';
+            document.getElementById('tablePasien').innerHTML = tbody;
+            document.getElementById('infoPasien').innerText = `Menampilkan ${daftar.length} pasien`;
+        }
+
+        function filterPasien() {
+            const kata = document.getElementById('cariPasien').value.trim().toLowerCase();
+            const status = document.getElementById('filterStatusPasien').value;
+            renderPasien(dataPasien.filter(p =>
+                ([p.nama, p.no_rm, p.no_hp, p.nik, p.tanggal_lahir, p.desa, p.kecamatan, p.kota, p.provinsi].some(v => String(v || '').toLowerCase().includes(kata))) &&
+                (!status || String(Number(p.aktif)) === status)
+            ));
+        }
+
+        function lihatProfilPasien(noRmEncoded) {
+            const p = dataPasien.find(item => item.no_rm === decodeURIComponent(noRmEncoded));
+            if(!p) return alert('Data pasien tidak ditemukan.');
+            const nik = p.nik ? `${'*'.repeat(Math.max(0, String(p.nik).length - 4))}${String(p.nik).slice(-4)}` : '-';
+            const alamat = [p.rt && `RT ${p.rt}`, p.rw && `RW ${p.rw}`, p.desa && `Desa/Kel. ${p.desa}`, p.kecamatan && `Kec. ${p.kecamatan}`, p.kota, p.provinsi].filter(Boolean).join(', ') || p.alamat || '-';
+            const isi = [
+                ['No. RM', p.no_rm], ['Nama Lengkap', p.nama],
+                ['Tanggal Lahir', formatTanggalPasien(p.tanggal_lahir)], ['Jenis Kelamin', p.jenis_kelamin || '-'],
+                ['NIK', nik], ['Nomor HP', p.no_hp || '-'],
+                ['Alamat', alamat, true], ['Status', Number(p.aktif) === 1 ? 'Aktif' : 'Nonaktif'],
+                ['Terdaftar', p.terdaftar_pada ? new Date(String(p.terdaftar_pada).replace(' ', 'T')).toLocaleString('id-ID') : '-']
+            ];
+            document.getElementById('isiProfilPasien').innerHTML = `<div class="profile-grid">${isi.map(([label, nilai, lebar]) => `<div class="profile-item${lebar ? ' wide' : ''}"><span class="profile-label">${escapeHtml(label)}</span><b>${escapeHtml(nilai)}</b></div>`).join('')}</div>`;
+            document.getElementById('modalProfil').style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+
+        function tutupProfilPasien() {
+            document.getElementById('modalProfil').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+
+        async function ubahStatusPasien(noRmEncoded, namaEncoded, aktif) {
+            const noRm = decodeURIComponent(noRmEncoded);
+            const nama = decodeURIComponent(namaEncoded);
+            const tindakan = aktif ? 'Aktifkan kembali' : 'Nonaktifkan';
+            if(!await konfirmasiAplikasi(`${tindakan} pasien ${nama}?`, {judul:'Konfirmasi Status Pasien'})) return;
+            fetch(`/api/pasien/${encodeURIComponent(noRm)}/status`, {
+                method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({aktif})
+            }).then(async res => ({ok:res.ok, data:await res.json()}))
+              .then(({ok,data}) => { if(!ok) throw new Error(data.pesan); alert(data.pesan); loadData(); })
+              .catch(error => alert('Gagal: ' + error.message));
+        }
+
+        function filterProduk() {
+            const kata = document.getElementById('cariProduk').value.trim().toLowerCase();
+            const hasil = dataBarang.filter(b => b.tipe === 'Produk' &&
+                (b.kode.toLowerCase().includes(kata) || b.nama.toLowerCase().includes(kata)));
+            let html = hasil.map(b => {
+                const aktif = Number(b.aktif) === 1;
+                const tombolStatus = aktif
+                    ? `<button class="btn-small btn-muted" onclick="ubahStatusItem('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}',false)">Nonaktifkan</button>`
+                    : `<button class="btn-small" style="background:#6f9a7c" onclick="ubahStatusItem('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}',true)">Aktifkan</button>`;
+                return `<tr><td>${escapeHtml(b.kode)}</td><td>${escapeHtml(b.nama)}<br><span class="status-badge ${aktif ? 'status-lunas' : 'status-belum'}">${aktif ? 'Aktif' : 'Nonaktif'}</span></td><td>Rp ${Number(b.modal || 0).toLocaleString('id-ID')}</td><td>Rp ${Number(b.harga).toLocaleString('id-ID')}</td><td>${b.stok}</td><td><div class="action-menu"><button type="button" class="action-gear" aria-label="Buka aksi produk" title="Aksi" onclick="toggleMenuAksi(event,this)">⚙</button><div class="action-menu-panel"><button class="btn-small btn-warning" onclick="bukaModal('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}',${Number(b.modal || 0)},${b.harga},${b.stok},'Produk')">Edit</button>${tombolStatus}<button class="btn-small btn-danger" onclick="hapusItemMaster('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}')">Hapus</button></div></div></td></tr>`;
+            }).join('');
+            if(!html) html = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Produk tidak ditemukan.</td></tr>';
+            document.getElementById('tableProduk').innerHTML = html;
+            document.getElementById('infoProduk').innerText = `Menampilkan ${hasil.length} produk`;
+        }
+
+        function filterTreatment() {
+            const kata = document.getElementById('cariTreatment').value.trim().toLowerCase();
+            const hasil = dataBarang.filter(b => b.tipe === 'Treatment' &&
+                (b.kode.toLowerCase().includes(kata) || b.nama.toLowerCase().includes(kata)));
+            let html = hasil.map(b => {
+                const aktif = Number(b.aktif) === 1;
+                const tombolStatus = aktif
+                    ? `<button class="btn-small btn-muted" onclick="ubahStatusItem('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}',false)">Nonaktifkan</button>`
+                    : `<button class="btn-small" style="background:#6f9a7c" onclick="ubahStatusItem('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}',true)">Aktifkan</button>`;
+                return `<tr><td>${escapeHtml(b.kode)}</td><td>${escapeHtml(b.nama)}<br><span class="status-badge ${aktif ? 'status-lunas' : 'status-belum'}">${aktif ? 'Aktif' : 'Nonaktif'}</span></td><td>Rp ${Number(b.modal || 0).toLocaleString('id-ID')}</td><td>Rp ${Number(b.harga).toLocaleString('id-ID')}</td><td><div class="action-menu"><button type="button" class="action-gear" aria-label="Buka aksi treatment" title="Aksi" onclick="toggleMenuAksi(event,this)">⚙</button><div class="action-menu-panel"><button class="btn-small btn-warning" onclick="bukaModal('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}',${Number(b.modal || 0)},${b.harga},0,'Treatment')">Edit</button>${tombolStatus}<button class="btn-small btn-danger" onclick="hapusItemMaster('${encodeURIComponent(b.kode)}','${encodeURIComponent(b.nama)}')">Hapus</button></div></div></td></tr>`;
+            }).join('');
+            if(!html) html = '<tr><td colspan="5" style="text-align:center;color:var(--muted)">Treatment tidak ditemukan.</td></tr>';
+            document.getElementById('tableTreatment').innerHTML = html;
+            document.getElementById('infoTreatment').innerText = `Menampilkan ${hasil.length} treatment`;
+        }
+
+        function renderPilihanKasir() {
+            const buatDaftar = (tipe, inputId, targetId) => {
+                const kata = document.getElementById(inputId).value.trim().toLowerCase();
+                const daftar = dataBarang.filter(b => Number(b.aktif) === 1 && b.tipe === tipe &&
+                    (!kata || b.kode.toLowerCase().includes(kata) || b.nama.toLowerCase().includes(kata)));
+                document.getElementById(targetId).innerHTML = daftar.length ? daftar.map(b => `
+                    <label class="multi-select-option">
+                        <input type="checkbox" ${pilihanItemKasir.has(b.kode) ? 'checked' : ''}
+                            onchange="ubahPilihanKasir('${encodeURIComponent(b.kode)}', this.checked)">
+                        <span><b>${escapeHtml(b.kode)}</b> — ${escapeHtml(b.nama)}<br><small>Rp ${Number(b.harga).toLocaleString('id-ID')}</small></span>
+                    </label>`).join('') : '<div class="multi-select-empty">Tidak ditemukan</div>';
+            };
+            buatDaftar('Treatment', 'cariTreatmentKasir', 'pilihanTreatmentKasir');
+            buatDaftar('Produk', 'cariProdukKasir', 'pilihanProdukKasir');
+        }
+
+        function ubahPilihanKasir(kodeEncoded, dipilih) {
+            const kode = decodeURIComponent(kodeEncoded);
+            if(dipilih) pilihanItemKasir.add(kode);
+            else pilihanItemKasir.delete(kode);
+            simpanStatusKerja();
+        }
+
+        function cariPasienKasir() {
+            const kata = document.getElementById('cariPasienKasir').value.trim().toLowerCase();
+            const noRmTerpilih = document.getElementById('pasienKasirTerpilih').value;
+            if(noRmTerpilih) return dataPasien.find(p => p.no_rm === noRmTerpilih && Number(p.aktif) === 1);
+            const cocok = dataPasien.filter(p => Number(p.aktif) === 1 && (labelPasienKasir(p).toLowerCase() === kata || p.no_rm.toLowerCase() === kata || p.nama.toLowerCase() === kata));
+            return cocok.length === 1 ? cocok[0] : null;
+        }
+
+        // --- SISTEM KERANJANG DENGAN QTY OTOMATIS ---
+        function tambahKeKeranjang() {
+            const noRmTerpilih = document.getElementById('pasienKasirTerpilih').value;
+            const pasienTerpilih = dataPasien.find(p =>
+                p.no_rm === noRmTerpilih && Number(p.aktif) === 1
+            );
+            if(!pasienTerpilih) {
+                alert('Pilih pasien terlebih dahulu sebelum menambahkan pesanan!');
+                const inputPasien = document.getElementById('cariPasienKasir');
+                inputPasien.focus();
+                renderHasilPasienKasir();
+                if(window.matchMedia('(max-width:800px)').matches) {
+                    setTimeout(() => inputPasien.scrollIntoView({behavior:'smooth', block:'center'}), 80);
+                }
+                return;
+            }
+            if(pilihanItemKasir.size === 0) return alert('Centang minimal satu Treatment atau Produk!');
+            [...pilihanItemKasir].forEach(kode => {
+                const item = dataBarang.find(b => b.kode === kode && Number(b.aktif) === 1);
+                if(!item) return;
+                const itemAda = keranjang.find(k => k.kode === item.kode);
+                if(itemAda) itemAda.qty += 1;
+                else keranjang.push({kode:item.kode, nama:item.nama, harga:item.harga, tipe:item.tipe, qty:1});
+            });
+            pilihanItemKasir.clear();
+            document.getElementById('cariTreatmentKasir').value = '';
+            document.getElementById('cariProdukKasir').value = '';
+            renderPilihanKasir();
+            renderKeranjang();
+            scrollKePembayaranKasir();
+        }
+
+        function scrollKePembayaranKasir() {
+            if(!window.matchMedia('(max-width:800px)').matches) return;
+            setTimeout(() => {
+                document.getElementById('aksiPembayaranKasir').scrollIntoView({behavior:'smooth', block:'end'});
+            }, 120);
+        }
+
+        function ubahQty(kode, jumlah) {
+            let item = keranjang.find(k => k.kode === kode);
+            if(item) {
+                item.qty += jumlah;
+                if(item.qty <= 0) {
+                    keranjang = keranjang.filter(k => k.kode !== kode); // Hapus jika qty 0
+                }
+            }
+            renderKeranjang();
+        }
+
+        function hapusItem(kode) {
+            keranjang = keranjang.filter(k => k.kode !== kode);
+            renderKeranjang();
+        }
+
+        function renderKeranjang() {
+            let html = "";
+            let total = 0;
+            keranjang.forEach(item => {
+                let subtotal = item.harga * item.qty;
+                total += subtotal;
+                html += `<tr>
+                    <td>[${item.tipe}] ${item.nama}</td>
+                    <td>
+                        <button class="btn-small" style="padding:2px 6px;" onclick="ubahQty('${item.kode}', -1)">-</button>
+                        <b>${item.qty}x</b>
+                        <button class="btn-small" style="padding:2px 6px;" onclick="ubahQty('${item.kode}', 1)">+</button>
+                    </td>
+                    <td>Rp ${subtotal.toLocaleString('id-ID')}</td>
+                    <td><button class="btn-small btn-danger" onclick="hapusItem('${item.kode}')">Hapus</button></td>
+                </tr>`;
+            });
+            document.getElementById('listKeranjang').innerHTML = html;
+            document.getElementById('totalHarga').innerText = total.toLocaleString('id-ID');
+            renderRingkasanPembayaran();
+            if(statusKerjaSudahDipulihkan) simpanStatusKerja();
+        }
+
+        function renderRingkasanPembayaran() {
+            const total = keranjang.reduce((jumlah, item) => jumlah + item.harga * item.qty, 0);
+            const uang = Math.max(Number(document.getElementById('uangDiterima')?.value || 0), 0);
+            const totalBayar = billingAktifDibayar + uang;
+            const kurang = Math.max(total - totalBayar, 0);
+            const kembali = Math.max(totalBayar - total, 0);
+            const el = document.getElementById('ringkasanPembayaran');
+            if(!el) return;
+            el.innerHTML = `<small>Sudah dibayar: Rp ${billingAktifDibayar.toLocaleString('id-ID')}</small><br>${kembali > 0 ? `Kembalian: <b>Rp ${kembali.toLocaleString('id-ID')}</b>` : `Kurang untuk lunas: <b>Rp ${kurang.toLocaleString('id-ID')}</b>`}`;
+        }
+
+        function bayar(mode = 'simpan') {
+            const pasien = cariPasienKasir();
+            if(!pasien || keranjang.length === 0) return alert("Pilih pasien dan item terlebih dahulu!");
+            let no_rm = pasien.no_rm;
+            const totalTagihan = keranjang.reduce((jumlah, item) => jumlah + item.harga * item.qty, 0);
+            const uangInput = Number(document.getElementById('uangDiterima').value || 0);
+            if(!Number.isInteger(uangInput) || uangInput < 0) return alert('Nominal uang tidak valid!');
+            const uangDiterima = mode === 'lunas' ? uangInput : 0;
+            if(mode === 'lunas' && uangDiterima <= 0) return alert('Masukkan uang yang diberikan pasien terlebih dahulu!');
+            if(mode === 'lunas' && billingAktifDibayar + uangDiterima < totalTagihan) {
+                const kurang = totalTagihan - billingAktifDibayar - uangDiterima;
+                return alert(`Uang belum cukup untuk pelunasan. Masih kurang Rp ${kurang.toLocaleString('id-ID')}. Gunakan Simpan Dulu di Billing jika ingin mencatatnya sebagai tagihan.`);
+            }
+
+            // Kirim data keranjang lengkap dengan qty-nya
+            let payloadData = keranjang.map(item => ({
+                kode: item.kode,
+                qty: item.qty
+            }));
+
+            fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ no_rm: no_rm, keranjang: payloadData, uang_diterima: uangDiterima, billing_id: billingAktifId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'sukses') {
+                    if(mode === 'lunas' && data.status_bayar === 'Lunas') cetakNota(data.billing_id);
+                    const info = data.kembalian > 0 ? `Kembalian Rp ${Number(data.kembalian).toLocaleString('id-ID')}` : `Sisa Rp ${Number(data.sisa).toLocaleString('id-ID')}`;
+                    alert(`${data.no_nota}: ${data.pesan}\nStatus: ${data.status_bayar}\n${info}`);
+                    keranjang = []; 
+                    document.getElementById('cariPasienKasir').value = '';
+                    document.getElementById('pasienKasirTerpilih').value = '';
+                    perbaruiTombolGantiPasien();
+                    document.getElementById('hasilPasienKasir').classList.remove('open');
+                    document.getElementById('cariTreatmentKasir').value = '';
+                    document.getElementById('cariProdukKasir').value = '';
+                    document.getElementById('uangDiterima').value = '0';
+                    billingAktifId = null;
+                    billingAktifDibayar = 0;
+                    document.getElementById('billingModeInfo').style.display = 'none';
+                    renderKeranjang();
+                    loadData();
+                } else {
+                    alert("Gagal: " + data.pesan);
+                }
+            }).catch(() => {
+                alert('Billing gagal disimpan. Periksa koneksi server.');
+            });
+        }
+
+        function loadBilling() {
+            fetch('/api/billing')
+                .then(res => res.json())
+                .then(data => {
+                    dataBilling = data;
+                    filterBilling();
+                    renderCatatanHutang();
+                })
+                .catch(() => alert('Daftar billing gagal dimuat.'));
+        }
+
+        function filterBilling() {
+            const kata = document.getElementById('cariBilling').value.trim().toLowerCase();
+            const status = document.getElementById('filterStatusBilling').value;
+            const hasil = dataBilling.filter(b => {
+                const cocokKata = !kata || b.no_nota.toLowerCase().includes(kata) || b.no_rm.toLowerCase().includes(kata) || b.nama_pasien.toLowerCase().includes(kata);
+                return cocokKata && (!status || b.status === status);
+            });
+            let html = hasil.map(b => {
+                const badge = b.status === 'Lunas' ? 'status-lunas' : 'status-belum';
+                const tombolAktif = b.status !== 'Lunas' ? `<button class="btn-small" style="background:#6f9a7c" onclick="tambahPembayaran(${b.id},'${encodeURIComponent(b.no_nota)}',${Number(b.sisa)})">Tambah Pembayaran</button><button class="btn-small" onclick="lanjutkanBilling(${b.id})">Edit Billing</button><button class="btn-small btn-danger" onclick="hapusBilling(${b.id},'${encodeURIComponent(b.no_nota)}',${Number(b.dibayar)})">Hapus</button>` : '';
+                const waktu = new Date(String(b.dibuat_pada).replace(' ', 'T')).toLocaleString('id-ID', {dateStyle:'medium', timeStyle:'short'});
+                return `<tr><td><b>${escapeHtml(b.no_nota)}</b></td><td>${escapeHtml(waktu)}</td><td>${escapeHtml(b.no_rm)}<br>${escapeHtml(b.nama_pasien)}</td><td>Rp ${Number(b.total).toLocaleString('id-ID')}</td><td>Rp ${Number(b.dibayar).toLocaleString('id-ID')}<br><small>Sisa Rp ${Number(b.sisa).toLocaleString('id-ID')}</small></td><td><span class="status-badge ${badge}">${escapeHtml(b.status)}</span></td><td><div class="action-group">${tombolAktif}<button class="btn-small" onclick="cetakNota(${b.id})">Cetak Nota</button></div></td></tr>`;
+            }).join('');
+            if(!html) html = '<tr><td colspan="7" class="history-empty">Billing tidak ditemukan.</td></tr>';
+            document.getElementById('tableBilling').innerHTML = html;
+            document.getElementById('infoBilling').innerText = `Menampilkan ${hasil.length} billing`;
+        }
+
+        async function tambahPembayaran(id, nomorEncoded, sisa) {
+            const nomor = decodeURIComponent(nomorEncoded);
+            const input = await inputNominalAplikasi(`Pembayaran untuk ${nomor}\nSisa tagihan: Rp ${Number(sisa).toLocaleString('id-ID')}`, sisa);
+            if(input === null) return;
+            const nominal = Number(String(input).replace(/[^0-9]/g, ''));
+            if(!Number.isInteger(nominal) || nominal <= 0) return alert('Nominal pembayaran tidak valid!');
+            fetch(`/api/billing/${id}/bayar`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({nominal})})
+                .then(async res => ({ok:res.ok, data:await res.json()}))
+                .then(({ok,data}) => {
+                    if(!ok) throw new Error(data.pesan || 'Pembayaran gagal');
+                    if(data.status_bayar === 'Lunas') cetakNota(id);
+                    const info = data.kembalian > 0 ? `Kembalian Rp ${Number(data.kembalian).toLocaleString('id-ID')}` : `Sisa Rp ${Number(data.sisa).toLocaleString('id-ID')}`;
+                    alert(`${data.pesan}\nStatus: ${data.status_bayar}\n${info}`);
+                    loadBilling(); loadData();
+                }).catch(error => {
+                    alert('Gagal: ' + error.message);
+                });
+        }
+
+        function renderCatatanHutang() {
+            const input = document.getElementById('cariHutang');
+            if(!input) return;
+            const kata = input.value.trim().toLowerCase();
+            const hasil = dataBilling.filter(b => b.status !== 'Lunas' && (!kata || b.no_nota.toLowerCase().includes(kata) || b.no_rm.toLowerCase().includes(kata) || b.nama_pasien.toLowerCase().includes(kata)));
+            let html = hasil.map(b => `<tr><td><b>${escapeHtml(b.no_nota)}</b><br><span class="status-badge status-belum">${escapeHtml(b.status)}</span></td><td>${escapeHtml(b.no_rm)}<br>${escapeHtml(b.nama_pasien)}</td><td>Rp ${Number(b.total).toLocaleString('id-ID')}</td><td>Rp ${Number(b.dibayar).toLocaleString('id-ID')}</td><td><b>Rp ${Number(b.sisa).toLocaleString('id-ID')}</b></td><td><div class="action-group"><button class="btn-small" style="background:#6f9a7c" onclick="tambahPembayaran(${b.id},'${encodeURIComponent(b.no_nota)}',${Number(b.sisa)})">Tambah Pembayaran</button><button class="btn-small" onclick="lanjutkanBilling(${b.id})">Edit Billing</button><button class="btn-small btn-danger" onclick="hapusBilling(${b.id},'${encodeURIComponent(b.no_nota)}',${Number(b.dibayar)})">Hapus</button><button class="btn-small" onclick="cetakNota(${b.id})">Cetak Nota</button></div></td></tr>`).join('');
+            if(!html) html = '<tr><td colspan="6" class="history-empty">Tidak ada tagihan kurang bayar.</td></tr>';
+            document.getElementById('tableHutang').innerHTML = html;
+            document.getElementById('infoHutang').innerText = `Menampilkan ${hasil.length} tagihan kurang bayar`;
+        }
+
+        async function lunasiBilling(id) {
+            if(!await konfirmasiAplikasi('Tandai billing ini sebagai Lunas?', {judul:'Konfirmasi Pelunasan', tipe:'success', teksKonfirmasi:'Ya, Lunasi'})) return;
+            fetch(`/api/billing/${id}/lunas`, {method:'POST'})
+                .then(async res => ({ok:res.ok, data:await res.json()}))
+                .then(({ok, data}) => {
+                    if(!ok) throw new Error(data.pesan || 'Gagal mengubah status');
+                    alert(data.pesan);
+                    loadBilling();
+                })
+                .catch(error => alert('Gagal: ' + error.message));
+        }
+
+        async function hapusBilling(id, nomorEncoded, sudahDibayar = 0) {
+            const nomor = decodeURIComponent(nomorEncoded);
+            const peringatanUang = Number(sudahDibayar) > 0
+                ? `\n\nInvoice ini sudah menerima Rp ${Number(sudahDibayar).toLocaleString('id-ID')}. Pastikan uang sudah dikembalikan kepada pasien. Catatan pembayaran juga akan terhapus.`
+                : '';
+            if(!await konfirmasiAplikasi(`Hapus billing ${nomor}? Billing yang sudah dihapus tidak dapat dikembalikan.${peringatanUang}`, {judul:'Hapus Billing', teksKonfirmasi:'Ya, Hapus'})) return;
+            fetch(`/api/billing/${id}`, {method:'DELETE'})
+                .then(async res => ({ok:res.ok, data:await res.json()}))
+                .then(({ok, data}) => {
+                    if(!ok) throw new Error(data.pesan || 'Billing gagal dihapus');
+                    alert(data.pesan);
+                    loadBilling();
+                })
+                .catch(error => alert('Gagal: ' + error.message));
+        }
+
+        function lanjutkanBilling(id) {
+            fetch(`/api/billing/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    const b = data.billing;
+                    if(b.status === 'Lunas') return alert('Billing ini sudah lunas dan tidak dapat diubah.');
+                    billingAktifId = b.id;
+                    billingAktifDibayar = Number(b.dibayar || 0);
+                    keranjang = data.detail.map(d => ({kode:d.kode_item, nama:d.nama_item, tipe:d.tipe, harga:d.harga, qty:d.qty}));
+                    const pasienBilling = dataPasien.find(p => p.no_rm === b.no_rm);
+                    document.getElementById('cariPasienKasir').value = pasienBilling ? labelPasienKasir(pasienBilling) : `${b.no_rm} - ${b.nama_pasien}`;
+                    document.getElementById('pasienKasirTerpilih').value = b.no_rm;
+                    perbaruiTombolGantiPasien();
+                    document.getElementById('uangDiterima').value = '0';
+                    document.getElementById('billingModeInfo').innerHTML = `Sedang mengedit billing <b>${escapeHtml(b.no_nota)}</b>. Pembayaran tetap dilakukan melalui menu Billing atau Kurang Bayar.`;
+                    document.getElementById('billingModeInfo').style.display = 'block';
+                    renderKeranjang();
+                    switchTab('kasir', document.querySelectorAll('.tab')[0]);
+                })
+                .catch(() => alert('Billing gagal dibuka.'));
+        }
+
+        function pulihkanPreviewNota() {
+            if(previewNotaSudahDipulihkan) return;
+            previewNotaSudahDipulihkan = true;
+            let id = 0;
+            try { id = Number(sessionStorage.getItem('ethPreviewNotaId') || 0); } catch(error) {}
+            if(Number.isInteger(id) && id > 0) cetakNota(id);
+        }
+
+        function cetakNota(id) {
+            id = Number(id);
+            if(!Number.isInteger(id) || id <= 0) return alert('Nota tidak valid.');
+            try { sessionStorage.setItem('ethPreviewNotaId', String(id)); } catch(error) {}
+            const modal = document.getElementById('modalNota');
+            const frame = document.getElementById('frameNota');
+            frame.srcdoc = '<p style="font-family:Arial;padding:20px">Memuat nota...</p>';
+            modal.style.display = window.matchMedia('(max-width:800px)').matches ? 'flex' : 'block';
+            document.body.classList.add('modal-open');
+            fetch(`/api/billing/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    const b = data.billing;
+                    const rows = data.detail.map(d => `<tr><td>${escapeHtml(d.nama_item)} x${d.qty}</td><td style="text-align:right">${Number(d.subtotal).toLocaleString('id-ID')}</td></tr>`).join('');
+                    const pembayaran = data.pembayaran.map(p => `<tr><td>${escapeHtml(p.waktu)}</td><td style="text-align:right">Rp ${Number(p.nominal).toLocaleString('id-ID')}</td></tr>`).join('') || '<tr><td colspan="2">Belum ada pembayaran</td></tr>';
+                    const sisa = Math.max(Number(b.total) - Number(b.dibayar || 0), 0);
+                    frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(b.no_nota)}</title><style>*{box-sizing:border-box}html{width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}body{width:72mm;max-width:calc(100% - 16px);margin:10px auto;font:12px Arial;color:#222;overflow-wrap:anywhere}.center{text-align:center}h2{margin:0 0 4px;font-size:20px}hr{border:0;border-top:1px dashed #333}table{width:100%;border-collapse:collapse;table-layout:fixed}td{padding:3px 0;vertical-align:top}td:last-child{white-space:nowrap}.total{font-size:15px;font-weight:bold}.status{text-align:center;border:1px solid #333;padding:5px;margin-top:8px;font-weight:bold}@page{size:80mm auto;margin:4mm}@media screen and (max-width:360px){body{width:auto;max-width:none;margin:8px;font-size:11px}h2{font-size:18px}.total{font-size:14px}}@media print{html,body{overflow:visible}body{width:72mm;max-width:none;margin:0;font-size:12px}}</style></head><body><div class="center"><h2>ETH AESTHETIC</h2><div>NOTA TRANSAKSI</div></div><hr><div>No: ${escapeHtml(b.no_nota)}</div><div>Tanggal: ${escapeHtml(b.dibuat_pada)}</div><div>Pasien: ${escapeHtml(b.no_rm)} - ${escapeHtml(b.nama_pasien)}</div><hr><table>${rows}</table><hr><table><tr class="total"><td>TOTAL</td><td style="text-align:right">Rp ${Number(b.total).toLocaleString('id-ID')}</td></tr><tr><td>Uang diterima</td><td style="text-align:right">Rp ${Number(b.dibayar || 0).toLocaleString('id-ID')}</td></tr><tr><td>Kurang bayar</td><td style="text-align:right">Rp ${sisa.toLocaleString('id-ID')}</td></tr><tr><td>Kembalian</td><td style="text-align:right">Rp ${Number(b.kembalian || 0).toLocaleString('id-ID')}</td></tr></table><hr><b>Riwayat pembayaran</b><table>${pembayaran}</table><div class="status">STATUS: ${escapeHtml(b.status).toUpperCase()}</div><p class="center">Terima kasih</p></body></html>`;
+                })
+                .catch(() => {
+                    try { sessionStorage.removeItem('ethPreviewNotaId'); } catch(error) {}
+                    frame.srcdoc = '<p style="font-family:Arial;padding:20px">Nota gagal dimuat.</p>';
+                });
+        }
+
+        function cetakFrameNota() {
+            const frame = document.getElementById('frameNota');
+            frame.contentWindow.focus();
+            frame.contentWindow.print();
+        }
+
+        function tutupPreviewNota() {
+            document.getElementById('modalNota').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            try { sessionStorage.removeItem('ethPreviewNotaId'); } catch(error) {}
+        }
+
+        // --- EDIT MODAL & REKAM MEDIS ---
+        function bukaModal(kode, nama, modal, harga, stok, tipe) {
+            kode = decodeURIComponent(kode);
+            nama = decodeURIComponent(nama);
+            document.getElementById('editKode').value = kode;
+            document.getElementById('editNama').value = nama;
+            document.getElementById('editModal').value = Number(modal || 0);
+            document.getElementById('editHarga').value = harga;
+            
+            if(tipe === 'Treatment') {
+                document.getElementById('bungkusStok').style.display = 'none';
+                document.getElementById('editStok').value = 0;
+            } else {
+                document.getElementById('bungkusStok').style.display = 'block';
+                document.getElementById('editStok').value = stok;
+            }
+            
+            document.getElementById('modalJudul').innerText = "Edit " + tipe;
+            document.getElementById('modalEdit').style.display = 'block';
+            document.body.classList.add('modal-open');
+            simpanStatusKerja();
+        }
+
+        function tutupModal() {
+            document.getElementById('modalEdit').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            simpanStatusKerja();
+        }
+
+        function simpanEdit() {
+            let dataUpdate = {
+                kode: document.getElementById('editKode').value,
+                nama: document.getElementById('editNama').value,
+                modal: document.getElementById('editModal').value,
+                harga: document.getElementById('editHarga').value,
+                stok: document.getElementById('editStok').value
+            };
+
+            fetch('/api/edit_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dataUpdate)
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'sukses') {
+                    tutupModal();
+                    loadData();
+                } else {
+                    alert("Gagal merubah data!");
+                }
+            });
+        }
+
+        function lihatRiwayat(noRmEncoded, namaEncoded) {
+            const no_rm = decodeURIComponent(noRmEncoded);
+            const nama = decodeURIComponent(namaEncoded);
+            pasienAktif = { no_rm, nama };
+            document.getElementById('tanggalHistory').value = '';
+            document.getElementById('historyToolbar').classList.add('visible');
+            document.getElementById('riwayatArea').innerHTML = `Memuat riwayat <b>${escapeHtml(nama)}</b>...`;
+            simpanStatusKerja();
+            if(window.matchMedia('(max-width:800px)').matches) {
+                setTimeout(() => {
+                    document.getElementById('riwayatArea').closest('.col').scrollIntoView({behavior:'smooth', block:'start'});
+                }, 80);
+            }
+            fetch(`/api/history/${no_rm}`)
+                .then(res => res.json())
+                .then(history => {
+                    historyPasien = history;
+                    renderHistory(historyPasien);
+                })
+                .catch(() => document.getElementById('riwayatArea').innerHTML = '<div class="history-empty">Riwayat gagal dimuat. Silakan coba lagi.</div>');
+        }
+
+        function filterHistoryTanggal() {
+            const tanggal = document.getElementById('tanggalHistory').value;
+            if(!tanggal) return resetFilterTanggal();
+            const hasil = historyPasien.filter(h => String(h.waktu).slice(0, 10) === tanggal);
+            renderHistory(hasil);
+        }
+
+        function resetFilterTanggal() {
+            document.getElementById('tanggalHistory').value = '';
+            renderHistory(historyPasien);
+        }
+
+        function scrollRiwayatTanggal(detailTanggal) {
+            if(!detailTanggal.open || !window.matchMedia('(max-width:800px)').matches) return;
+            setTimeout(() => {
+                detailTanggal.scrollIntoView({behavior:'smooth', block:'start'});
+            }, 100);
+        }
+
+        function renderHistory(history) {
+            const nama = pasienAktif ? escapeHtml(pasienAktif.nama) : '';
+            let html = `<h4 class="history-title">Riwayat — ${nama} <span class="result-count">(${history.length} data)</span></h4>`;
+            if(history.length === 0) {
+                html += '<div class="history-empty">Belum ada transaksi pada tanggal ini.</div>';
+            } else {
+                const perTanggal = {};
+                history.forEach(h => {
+                    const tanggal = String(h.waktu).slice(0, 10);
+                    if(!perTanggal[tanggal]) perTanggal[tanggal] = { Treatment: [], Produk: [] };
+                    if(perTanggal[tanggal][h.tipe]) perTanggal[tanggal][h.tipe].push(h);
+                });
+
+                Object.keys(perTanggal).sort().reverse().forEach(tanggal => {
+                    const labelTanggal = new Date(tanggal + 'T00:00:00').toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+                    const buatItem = (item, kelas = '') => {
+                        const jam = String(item.waktu).slice(11, 16);
+                        return `<div class="history-item ${kelas}"><div class="history-date">Pukul ${escapeHtml(jam)}</div><b>${escapeHtml(item.nama_item)}</b><br>Rp ${Number(item.harga).toLocaleString('id-ID')}</div>`;
+                    };
+                    const treatments = perTanggal[tanggal].Treatment.map(h => buatItem(h)).join('') || '<div class="history-empty">Tidak ada treatment</div>';
+                    const products = perTanggal[tanggal].Produk.map(h => buatItem(h, 'product')).join('') || '<div class="history-empty">Tidak ada pembelian produk</div>';
+                    const jumlahTreatment = perTanggal[tanggal].Treatment.length;
+                    const jumlahProduk = perTanggal[tanggal].Produk.length;
+                    html += `<details class="history-day" ontoggle="scrollRiwayatTanggal(this)"><summary class="history-day-title"><span>${escapeHtml(labelTanggal)} <span class="history-day-count">${jumlahTreatment} Treatment · ${jumlahProduk} Produk</span></span></summary><div class="history-grid"><div class="history-column"><h5 class="history-column-title">Treatment</h5>${treatments}</div><div class="history-column"><h5 class="history-column-title product">Produk</h5>${products}</div></div></details>`;
+                });
+            }
+            document.getElementById('riwayatArea').innerHTML = html;
+        }
+
+        function bukaModalTambah(jenis) {
+            document.getElementById('jenisTambah').value = jenis;
+            document.getElementById('editPasienNoRm').value = '';
+            document.getElementById('judulTambah').innerText = `Tambah ${jenis}`;
+            document.getElementById('tambahNama').value = '';
+            document.getElementById('tambahModal').value = '';
+            document.getElementById('tambahHarga').value = '';
+            document.getElementById('tambahStok').value = 0;
+            document.getElementById('tambahNoHp').value = '';
+            document.getElementById('tambahNik').value = '';
+            document.getElementById('tambahTanggalLahir').value = '';
+            document.getElementById('tambahJenisKelamin').value = '';
+            document.getElementById('tambahRt').value = '';
+            document.getElementById('tambahRw').value = '';
+            document.getElementById('tambahDesa').value = '';
+            document.getElementById('tambahKecamatan').value = '';
+            document.getElementById('tambahKota').value = '';
+            document.getElementById('tambahProvinsi').value = '';
+
+            const pasien = jenis === 'Pasien' || jenis === 'EditPasien';
+            document.getElementById('fieldItemTambah').style.display = pasien ? 'none' : 'block';
+            document.getElementById('fieldPasienTambah').style.display = pasien ? 'block' : 'none';
+            document.getElementById('fieldStokTambah').style.display = jenis === 'Produk' ? 'block' : 'none';
+            document.getElementById('modalTambah').style.display = 'block';
+            document.body.classList.add('modal-open');
+            simpanStatusKerja();
+            setTimeout(() => document.getElementById('tambahNama').focus(), 50);
+        }
+
+        function bukaEditPasien(noRmEncoded) {
+            const p = dataPasien.find(item => item.no_rm === decodeURIComponent(noRmEncoded));
+            if(!p) return alert('Data pasien tidak ditemukan.');
+            bukaModalTambah('EditPasien');
+            document.getElementById('judulTambah').innerText = `Edit Pasien — ${p.no_rm}`;
+            document.getElementById('editPasienNoRm').value = p.no_rm;
+            document.getElementById('tambahNama').value = p.nama || '';
+            document.getElementById('tambahNik').value = p.nik || '';
+            document.getElementById('tambahTanggalLahir').value = p.tanggal_lahir || '';
+            document.getElementById('tambahJenisKelamin').value = p.jenis_kelamin || '';
+            document.getElementById('tambahNoHp').value = p.no_hp || '';
+            document.getElementById('tambahRt').value = p.rt || '';
+            document.getElementById('tambahRw').value = p.rw || '';
+            document.getElementById('tambahDesa').value = p.desa || '';
+            document.getElementById('tambahKecamatan').value = p.kecamatan || '';
+            document.getElementById('tambahKota').value = p.kota || '';
+            document.getElementById('tambahProvinsi').value = p.provinsi || '';
+            simpanStatusKerja();
+        }
+
+        function tutupModalTambah() {
+            document.getElementById('modalTambah').style.display = 'none';
+            document.body.classList.remove('modal-open');
+            simpanStatusKerja();
+        }
+
+        async function hapusItemMaster(kodeEncoded, namaEncoded) {
+            const kode = decodeURIComponent(kodeEncoded);
+            const nama = decodeURIComponent(namaEncoded);
+            if(!await konfirmasiAplikasi(`Hapus ${nama} (${kode})? Jika pernah digunakan, item akan dinonaktifkan agar nota dan history tetap aman.`, {judul:'Hapus Item', teksKonfirmasi:'Ya, Hapus'})) return;
+            fetch(`/api/hapus_item/${encodeURIComponent(kode)}`, {method:'DELETE'})
+                .then(async res => ({ok:res.ok, data:await res.json()}))
+                .then(({ok, data}) => {
+                    if(!ok) throw new Error(data.pesan || 'Item gagal dihapus');
+                    alert(data.pesan);
+                    loadData();
+                })
+                .catch(error => alert('Gagal: ' + error.message));
+        }
+
+        async function ubahStatusItem(kodeEncoded, namaEncoded, aktif) {
+            const kode = decodeURIComponent(kodeEncoded);
+            const nama = decodeURIComponent(namaEncoded);
+            const tindakan = aktif ? 'aktifkan kembali' : 'nonaktifkan';
+            if(!await konfirmasiAplikasi(`${tindakan.charAt(0).toUpperCase() + tindakan.slice(1)} ${nama}?`, {judul:'Konfirmasi Status Item'})) return;
+            fetch(`/api/item/${encodeURIComponent(kode)}/status`, {
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({aktif})
+            })
+                .then(async res => ({ok:res.ok, data:await res.json()}))
+                .then(({ok, data}) => {
+                    if(!ok) throw new Error(data.pesan || 'Status item gagal diubah');
+                    alert(data.pesan);
+                    loadData();
+                })
+                .catch(error => alert('Gagal: ' + error.message));
+        }
+
+        function simpanTambah() {
+            const jenis = document.getElementById('jenisTambah').value;
+            const nama = document.getElementById('tambahNama').value.trim();
+            if(!nama) return alert('Nama wajib diisi!');
+
+            let url;
+            let payload;
+            if(jenis === 'Pasien' || jenis === 'EditPasien') {
+                const nik = document.getElementById('tambahNik').value.replace(/\D/g, '');
+                if(nik && nik.length !== 16) return alert('NIK harus 16 digit atau dikosongkan!');
+                url = jenis === 'EditPasien'
+                    ? `/api/pasien/${encodeURIComponent(document.getElementById('editPasienNoRm').value)}`
+                    : '/api/tambah_pasien';
+                payload = {
+                    nama,
+                    no_hp: document.getElementById('tambahNoHp').value.trim(),
+                    nik,
+                    tanggal_lahir: document.getElementById('tambahTanggalLahir').value,
+                    jenis_kelamin: document.getElementById('tambahJenisKelamin').value,
+                    rt: document.getElementById('tambahRt').value.trim(),
+                    rw: document.getElementById('tambahRw').value.trim(),
+                    desa: document.getElementById('tambahDesa').value.trim(),
+                    kecamatan: document.getElementById('tambahKecamatan').value.trim(),
+                    kota: document.getElementById('tambahKota').value.trim(),
+                    provinsi: document.getElementById('tambahProvinsi').value.trim()
+                };
+            } else {
+                const modal = Number(document.getElementById('tambahModal').value);
+                const harga = Number(document.getElementById('tambahHarga').value);
+                const stok = jenis === 'Produk' ? Number(document.getElementById('tambahStok').value) : 0;
+                if(!Number.isFinite(modal) || modal < 0) return alert('Modal tidak valid!');
+                if(!Number.isFinite(harga) || harga < 0) return alert('Harga jual tidak valid!');
+                if(!Number.isInteger(stok) || stok < 0) return alert('Stok tidak valid!');
+                url = '/api/tambah_item';
+                payload = { nama, tipe: jenis, modal, harga, stok };
+            }
+
+            fetch(url, {
+                method: jenis === 'EditPasien' ? 'PUT' : 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            })
+            .then(async res => ({ok: res.ok, data: await res.json()}))
+            .then(({ok, data}) => {
+                if(!ok || data.status !== 'sukses') throw new Error(data.pesan || 'Data gagal disimpan');
+                tutupModalTambah();
+                alert(`${data.pesan}${data.kode ? ' Kode: ' + data.kode : ''}${data.no_rm ? ' No. RM: ' + data.no_rm : ''}`);
+                loadData();
+            })
+            .catch(error => alert('Gagal: ' + error.message));
+        }
+
+        window.addEventListener('click', event => {
+            if(!event.target.closest('.action-gear')) tutupSemuaMenuAksi();
+            if(!event.target.closest('#bungkusCariPasienKasir')) document.getElementById('hasilPasienKasir').classList.remove('open');
+            if(event.target === document.getElementById('modalTambah')) tutupModalTambah();
+            if(event.target === document.getElementById('modalEdit')) tutupModal();
+            if(event.target === document.getElementById('modalNota')) tutupPreviewNota();
+            if(event.target === document.getElementById('modalProfil')) tutupProfilPasien();
+            if(event.target === document.getElementById('modalAdmin')) tutupModalAdmin();
+        });
+        window.addEventListener('scroll', () => tutupSemuaMenuAksi(), true);
+        window.addEventListener('resize', () => tutupSemuaMenuAksi());
+        document.addEventListener('input', event => {
+            if(event.target.matches('input, select, textarea')) {
+                perbaruiSemuaTombolHapusPencarian();
+                simpanStatusKerja();
+            }
+        });
+        document.addEventListener('change', event => {
+            if(event.target.matches('input, select, textarea')) simpanStatusKerja();
+        });
+        window.addEventListener('beforeunload', simpanStatusKerja);
+
+        const rupiah = nilai => `Rp ${Number(nilai || 0).toLocaleString('id-ID')}`;
+        const bulanKini = () => new Date(Date.now() + 7*3600000).toISOString().slice(0,7);
+        const tanggalKini = () => new Date(Date.now() + 7*3600000).toISOString().slice(0,10);
+
+        function loadLaporan(){
+            const bulan=document.getElementById('bulanLaporan'); if(!bulan.value) bulan.value=bulanKini();
+            fetch(`/api/laporan-bulanan?bulan=${bulan.value}`).then(r=>r.json()).then(d=>{
+                document.getElementById('kartuLaporan').innerHTML=[['Omzet',d.omzet],['Modal Transaksi',d.modal],['Laba Kotor',d.laba_kotor],['Pengeluaran',d.pengeluaran],['Penyusutan Aset',d.penyusutan],['Estimasi Laba Bersih',d.laba_bersih]].map(([n,v])=>`<div class="metric ${n.includes('Bersih')?(v>=0?'positive':'negative'):''}"><small>${n}</small><strong>${rupiah(v)}</strong></div>`).join('');
+                document.getElementById('tableLaporan').innerHTML=(d.detail||[]).map(x=>`<tr><td>${escapeHtml(x.no_nota)}</td><td>${escapeHtml(x.dibayar_pada||'-')}</td><td>${escapeHtml(x.nama_pasien)}</td><td>${rupiah(x.total)}</td><td>${rupiah(x.modal)}</td><td>${rupiah(x.laba_kotor)}</td></tr>`).join('')||'<tr><td colspan="6">Belum ada transaksi lunas.</td></tr>';
+            }).catch(()=>alert('Laporan gagal dimuat.'));
+        }
+        function posisikanModalAdminKeAtas(){const modal=document.getElementById('modalAdmin'),konten=modal?.querySelector('.modal-content');if(document.activeElement&&typeof document.activeElement.blur==='function')document.activeElement.blur();const reset=()=>{if(modal){modal.scrollTop=0;if(modal.scrollTo)modal.scrollTo({top:0,left:0,behavior:'auto'});}if(konten){konten.scrollTop=0;if(konten.scrollTo)konten.scrollTo({top:0,left:0,behavior:'auto'});}};reset();requestAnimationFrame(()=>{reset();setTimeout(reset,80);});}
+        function bukaModalAdmin(jenis,id=''){document.getElementById('adminJenis').value=jenis;document.getElementById('adminEditId').value=id;['formPengeluaranAdmin','formAsetAdmin','formKaryawanAdmin','formResetPasswordAdmin'].forEach(x=>document.getElementById(x).style.display='none');document.getElementById(`form${jenis}Admin`).style.display='grid';const modal=document.getElementById('modalAdmin');modal.style.display='block';document.body.classList.add('modal-open');posisikanModalAdminKeAtas();setTimeout(simpanStatusKerja,0);}
+        function tombolGirAdmin(isi,label='Buka pilihan aksi'){return `<div class="action-menu"><button type="button" class="action-gear" aria-label="${label}" onclick="toggleMenuAksi(event,this)">⚙</button><div class="action-menu-panel">${isi}</div></div>`;}
+        function tutupModalAdmin(){document.getElementById('modalAdmin').style.display='none';document.body.classList.remove('modal-open');simpanStatusKerja();}
+        function bukaFormPengeluaran(item=null){bukaModalAdmin('Pengeluaran',item?.id||'');document.getElementById('judulModalAdmin').textContent=item?'Edit Pengeluaran':'Tambah Pengeluaran';document.getElementById('keluarTanggal').value=item?.tanggal||tanggalKini();document.getElementById('keluarKategori').value=item?.kategori||'Operasional';document.getElementById('keluarKet').value=item?.keterangan||'';document.getElementById('keluarNominal').value=item?.nominal||'';}
+        function teksCariAdmin(id){return String(document.getElementById(id)?.value||'').trim().toLocaleLowerCase('id-ID');}
+        function cocokCariAdmin(item,kolom,kata){return !kata||kolom.some(k=>String(item?.[k]??'').toLocaleLowerCase('id-ID').includes(kata));}
+        function renderPengeluaran(){const kata=teksCariAdmin('cariPengeluaran');const rows=dataPengeluaranAdmin.filter(x=>cocokCariAdmin(x,['tanggal','kategori','keterangan','nominal'],kata));document.getElementById('tablePengeluaran').innerHTML=rows.map(x=>`<tr><td>${escapeHtml(x.tanggal)}</td><td>${escapeHtml(x.kategori)}</td><td>${escapeHtml(x.keterangan)}</td><td>${rupiah(x.nominal)}</td><td>${tombolGirAdmin(`<button class="btn-small btn-warning" onclick="bukaFormPengeluaran(dataPengeluaranAdmin.find(x=>x.id===${x.id}))">Edit</button><button class="btn-small btn-danger" onclick="hapusPengeluaran(${x.id})">Hapus</button>`)}</td></tr>`).join('')||`<tr><td colspan="5">${kata?'Pengeluaran tidak ditemukan.':'Belum ada pengeluaran pada bulan ini.'}</td></tr>`;document.getElementById('infoPengeluaran').textContent=`Menampilkan ${rows.length} pengeluaran`;}
+        function loadPengeluaran(){const bulan=document.getElementById('bulanPengeluaran');if(!bulan.value)bulan.value=bulanKini();fetch(`/api/pengeluaran?bulan=${bulan.value}`).then(r=>r.json()).then(rows=>{dataPengeluaranAdmin=rows;renderPengeluaran();});}
+        function simpanPengeluaran(){const id=document.getElementById('adminEditId').value;const body={tanggal:document.getElementById('keluarTanggal').value||tanggalKini(),kategori:document.getElementById('keluarKategori').value,keterangan:document.getElementById('keluarKet').value,nominal:document.getElementById('keluarNominal').value};fetch(id?`/api/pengeluaran/${id}`:'/api/pengeluaran',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json()).then(d=>{alert(d.pesan);if(d.status==='sukses'){tutupModalAdmin();loadPengeluaran();}});}
+        async function hapusPengeluaran(id){if(!await konfirmasiAplikasi('Hapus catatan pengeluaran ini? Angka laporan bulanan akan ikut diperbarui.',{judul:'Hapus Pengeluaran',teksKonfirmasi:'Ya, Hapus'}))return;fetch(`/api/pengeluaran/${id}`,{method:'DELETE'}).then(r=>r.json()).then(d=>{alert(d.pesan);loadPengeluaran();});}
+        function pilihStatusAset(status,tombol){statusAsetAktif=status;document.querySelectorAll('#aset .sub-tab').forEach(x=>x.classList.remove('active'));tombol.classList.add('active');renderAset();simpanStatusKerja();}
+        function renderAset(){const kata=teksCariAdmin('cariAset');const rows=dataAsetAdmin.filter(x=>Number(x.aktif)===statusAsetAktif&&cocokCariAdmin(x,['kode','nama','kategori','tanggal_beli','kondisi','lokasi','keterangan'],kata));document.getElementById('tableAset').innerHTML=rows.map(x=>{const susut=Math.round(Math.max(Number(x.harga_perolehan)-Number(x.nilai_sisa),0)/Math.max(Number(x.masa_manfaat_bulan),1));const aksi=`<button class="btn-small btn-warning" onclick="bukaFormAset(dataAsetAdmin.find(x=>x.id===${x.id}))">Edit</button>${x.aktif?`<button class="btn-small btn-danger" onclick="arsipAset(${x.id})">Arsipkan</button>`:`<button class="btn-small" onclick="lepasArsipAset(${x.id})">Lepas Arsip</button>`}`;return `<tr><td>${escapeHtml(x.kode)}</td><td>${escapeHtml(x.nama)}<br><small>${escapeHtml(x.kategori||'')}</small></td><td>${escapeHtml(x.tanggal_beli)}</td><td>${rupiah(x.harga_perolehan)}</td><td>${rupiah(susut)}</td><td>${escapeHtml(x.aktif?x.kondisi:'Diarsipkan')}</td><td>${escapeHtml(x.lokasi||'-')}</td><td>${tombolGirAdmin(aksi)}</td></tr>`}).join('')||`<tr><td colspan="8">${kata?'Aset tidak ditemukan.':`Belum ada aset ${statusAsetAktif?'aktif':'yang diarsipkan'}.`}</td></tr>`;document.getElementById('infoAset').textContent=`Menampilkan ${rows.length} aset ${statusAsetAktif?'yang digunakan':'yang diarsipkan'}`;}
+        function loadAset(){fetch('/api/aset').then(r=>r.json()).then(rows=>{dataAsetAdmin=rows;renderAset();});}
+        function bukaFormAset(item=null){bukaModalAdmin('Aset',item?.id||'');document.getElementById('judulModalAdmin').textContent=item?'Edit Aset':'Tambah Aset';const nilai={asetNama:item?.nama||'',asetKategori:item?.kategori||'Alat Treatment',asetTanggal:item?.tanggal_beli||tanggalKini(),asetHarga:item?.harga_perolehan||'',asetSisa:item?.nilai_sisa??0,asetManfaat:item?.masa_manfaat_bulan||48,asetKondisi:item?.kondisi||'Baik',asetLokasi:item?.lokasi||'',asetKeterangan:item?.keterangan||''};Object.entries(nilai).forEach(([id,v])=>document.getElementById(id).value=v);}
+        function simpanAset(){const id=document.getElementById('adminEditId').value;const body={nama:document.getElementById('asetNama').value,kategori:document.getElementById('asetKategori').value,tanggal_beli:document.getElementById('asetTanggal').value||tanggalKini(),harga_perolehan:document.getElementById('asetHarga').value,nilai_sisa:document.getElementById('asetSisa').value,masa_manfaat_bulan:document.getElementById('asetManfaat').value,kondisi:document.getElementById('asetKondisi').value,lokasi:document.getElementById('asetLokasi').value,keterangan:document.getElementById('asetKeterangan').value};fetch(id?`/api/aset/${id}`:'/api/aset',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(r=>r.json()).then(d=>{alert(d.pesan);if(d.status==='sukses'){tutupModalAdmin();loadAset();}})}
+        async function arsipAset(id){if(!await konfirmasiAplikasi('Arsipkan aset ini? Data lama tetap tersimpan untuk riwayat.',{judul:'Arsipkan Aset',teksKonfirmasi:'Ya, Arsipkan'}))return;fetch(`/api/aset/${id}`,{method:'DELETE'}).then(r=>r.json()).then(d=>{alert(d.pesan);loadAset();});}
+        async function lepasArsipAset(id){if(!await konfirmasiAplikasi('Aktifkan kembali aset ini? Aset akan kembali diperhitungkan dalam penyusutan.',{judul:'Lepas Arsip Aset',tipe:'info',teksKonfirmasi:'Ya, Aktifkan'}))return;fetch(`/api/aset/${id}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({aktif:1})}).then(r=>r.json()).then(d=>{alert(d.pesan);loadAset();});}
+        function renderKaryawan(){const kata=teksCariAdmin('cariKaryawan');const rows=dataKaryawanAdmin.filter(x=>cocokCariAdmin(x,['kode','nik','nama','nama_panggilan','username','jabatan','no_hp','email','status_kerja'],kata));document.getElementById('tableKaryawan').innerHTML=rows.map(x=>{const aksi=`<button class="btn-small btn-warning" onclick="bukaFormKaryawan(dataKaryawanAdmin.find(x=>x.id===${x.id}))">Edit Data Diri</button><button class="btn-small" onclick="bukaResetPassword(${x.id},'${encodeURIComponent(x.nama)}')">Reset Password</button><button class="btn-small" onclick="bukaHistoryKaryawan(${x.id})">History Absensi</button><button class="btn-small ${x.aktif?'btn-danger':'btn-warning'}" onclick="ubahStatusKaryawan(${x.id},${x.aktif?0:1})">${x.aktif?'Nonaktifkan':'Aktifkan'}</button>`;return `<tr><td>${escapeHtml(x.kode)}</td><td>${escapeHtml(x.nik||'-')}</td><td>${escapeHtml(x.nama)}<br><small>Login: ${escapeHtml(x.username||'-')}</small></td><td>${escapeHtml(x.jabatan||'-')}</td><td>${escapeHtml(x.no_hp||'-')}</td><td><span class="status-badge ${x.aktif?'status-lunas':'status-belum'}">${x.aktif?'Aktif':'Nonaktif'}</span></td><td>${tombolGirAdmin(aksi)}</td></tr>`}).join('')||`<tr><td colspan="7">${kata?'Karyawan tidak ditemukan.':'Belum ada data karyawan.'}</td></tr>`;document.getElementById('infoKaryawan').textContent=`Menampilkan ${rows.length} karyawan`;}
+        function loadKaryawan(){fetch('/api/karyawan').then(r=>r.json()).then(rows=>{dataKaryawanAdmin=rows;renderKaryawan();});}
+        function bolehAbsenKaryawanLain(){return Boolean(penggunaLogin&&(penggunaLogin.is_owner||String(penggunaLogin.jabatan||'').trim().toLowerCase()==='kepala toko'||izinLogin.has('absensi_karyawan_lain')));}
+        function loadAbsensi(){const boleh=bolehAbsenKaryawanLain();document.getElementById('pilihKaryawanWrap').style.display=boleh?'block':'none';document.getElementById('catatanAbsenWrap').style.display=boleh?'block':'none';document.getElementById('namaKaryawanAbsenWrap').style.display=boleh?'none':'block';document.getElementById('petunjukAbsensi').textContent=boleh?'Pilih karyawan yang akan dibantu melakukan absensi.':'Tekan Absen Masuk atau Absen Pulang untuk diri Anda sendiri.';document.getElementById('namaKaryawanAbsen').innerHTML=`<b>${escapeHtml(penggunaLogin?.nama||'Akun Anda')}</b><br>${escapeHtml(penggunaLogin?.jabatan||'')}`;if(!boleh)return;fetch('/api/karyawan-ringkas').then(r=>r.json()).then(karyawan=>{document.getElementById('pilihKaryawan').innerHTML=karyawan.length?karyawan.map(x=>`<option value="${x.id}">${escapeHtml(x.kode)} — ${escapeHtml(x.nama)}</option>`).join(''):'<option value="">Belum ada karyawan aktif</option>';});}
+        let buktiAbsen=null,streamKameraAbsen=null,fotoSementaraAbsen=null,lokasiSementaraAbsen=null;
+        function resetBuktiAbsen(){buktiAbsen=null;document.getElementById('buktiAbsenCard').classList.remove('ready');document.getElementById('statusBuktiAbsen').textContent='Selfie dan lokasi belum diambil.';document.getElementById('tombolAbsenMasuk').disabled=true;document.getElementById('tombolAbsenPulang').disabled=true;}
+        async function mulaiAmbilBukti(){
+            fotoSementaraAbsen=null;lokasiSementaraAbsen=null;document.getElementById('inputKameraNative').value='';document.getElementById('modalKameraAbsen').style.display='flex';document.body.classList.add('modal-open');ulangSelfieAbsen();const tag=document.getElementById('tagLokasiKamera');tag.className='camera-location-tag';tag.textContent='⌖ Mencari GPS dan alamat…';ambilLokasiAbsen().then(async lokasi=>{lokasiSementaraAbsen=await lengkapiAlamatLokasi(lokasi);tag.classList.add('ready');tag.textContent=`⌖ ${lokasiSementaraAbsen.alamat||`${lokasi.latitude.toFixed(6)}, ${lokasi.longitude.toFixed(6)}`} • ±${Math.round(lokasi.akurasi)} m`;}).catch(()=>{tag.classList.add('error');tag.textContent='⌖ Lokasi belum tersedia';});
+            if(!window.isSecureContext&&!['localhost','127.0.0.1'].includes(location.hostname)){aktifkanKameraNative('Akses HTTP memblokir kamera tertanam. Gunakan kamera ponsel di bawah.');return;}
+            if(!navigator.mediaDevices?.getUserMedia){aktifkanKameraNative('Browser tidak mendukung kamera tertanam. Gunakan kamera ponsel di bawah.');return;}
+            try{streamKameraAbsen=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'user'},width:{ideal:720},height:{ideal:960}},audio:false});const video=document.getElementById('videoKameraAbsen');video.srcObject=streamKameraAbsen;await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Kamera terlalu lama merespons')),8000);video.onloadedmetadata=()=>{clearTimeout(timer);resolve();};});await video.play();document.getElementById('pesanKameraAbsen').textContent='Posisikan wajah di dalam panduan, lalu ambil foto.';}catch(e){hentikanKameraAbsen();aktifkanKameraNative('Kamera tertanam tidak dapat dibuka. Gunakan kamera ponsel di bawah.');}
+        }
+        function aktifkanKameraNative(pesan){document.getElementById('pesanKameraAbsen').textContent=pesan;document.getElementById('tombolJepretAbsen').classList.add('is-hidden');document.getElementById('tombolUlangAbsen').classList.add('is-hidden');document.getElementById('tombolKameraNative').classList.remove('is-hidden');}
+        function hentikanKameraAbsen(){if(streamKameraAbsen){streamKameraAbsen.getTracks().forEach(t=>t.stop());streamKameraAbsen=null;}document.getElementById('videoKameraAbsen').srcObject=null;}
+        function tutupKameraAbsen(){hentikanKameraAbsen();document.getElementById('modalKameraAbsen').style.display='none';document.body.classList.remove('modal-open');fotoSementaraAbsen=null;}
+        function tampilkanPreviewSelfie(dataUrl){fotoSementaraAbsen=dataUrl;const preview=document.getElementById('previewKameraAbsen'),video=document.getElementById('videoKameraAbsen');preview.src=dataUrl;preview.style.display='block';video.style.display='none';document.getElementById('tombolJepretAbsen').classList.add('is-hidden');document.getElementById('tombolKameraNative').classList.add('is-hidden');document.getElementById('tombolUlangAbsen').classList.remove('is-hidden');document.getElementById('tombolPakaiAbsen').classList.remove('is-hidden');document.getElementById('pesanKameraAbsen').textContent='Periksa foto, kemudian pilih Gunakan Selfie.';}
+        function jepretSelfieAbsen(){const video=document.getElementById('videoKameraAbsen');if(!streamKameraAbsen||!video.videoWidth)return aktifkanKameraNative('Kamera belum siap. Gunakan kamera ponsel di bawah.');const canvas=document.getElementById('canvasKameraAbsen'),maks=720,skala=Math.min(1,maks/video.videoWidth);canvas.width=Math.round(video.videoWidth*skala);canvas.height=Math.round(video.videoHeight*skala);const ctx=canvas.getContext('2d');ctx.translate(canvas.width,0);ctx.scale(-1,1);ctx.drawImage(video,0,0,canvas.width,canvas.height);tampilkanPreviewSelfie(canvas.toDataURL('image/jpeg',.72));}
+        function pakaiFileSelfieAbsen(file){if(!file)return;const reader=new FileReader();reader.onload=()=>{const img=new Image();img.onload=()=>{const canvas=document.getElementById('canvasKameraAbsen'),maks=720,skala=Math.min(1,maks/img.width);canvas.width=Math.max(1,Math.round(img.width*skala));canvas.height=Math.max(1,Math.round(img.height*skala));canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);tampilkanPreviewSelfie(canvas.toDataURL('image/jpeg',.72));};img.onerror=()=>alert('Foto tidak dapat dibaca. Silakan ambil ulang.');img.src=reader.result;};reader.readAsDataURL(file);}
+        function ulangSelfieAbsen(){fotoSementaraAbsen=null;document.getElementById('previewKameraAbsen').style.display='none';document.getElementById('videoKameraAbsen').style.display='block';document.getElementById('tombolJepretAbsen').classList.remove('is-hidden');document.getElementById('tombolUlangAbsen').classList.add('is-hidden');document.getElementById('tombolKameraNative').classList.add('is-hidden');document.getElementById('tombolPakaiAbsen').classList.add('is-hidden');}
+        function ambilLokasiAbsen(){return new Promise((resolve,reject)=>{if(!navigator.geolocation)return reject(new Error('Geolokasi tidak tersedia.'));navigator.geolocation.getCurrentPosition(p=>resolve({latitude:p.coords.latitude,longitude:p.coords.longitude,akurasi:p.coords.accuracy}),reject,{enableHighAccuracy:true,timeout:20000,maximumAge:0});});}
+        async function lengkapiAlamatLokasi(lokasi){try{const r=await fetch(`/api/geocode/reverse?lat=${encodeURIComponent(lokasi.latitude)}&lon=${encodeURIComponent(lokasi.longitude)}`);const d=await r.json();return {...lokasi,alamat:r.ok&&d.status==='sukses'?d.alamat:''};}catch(e){return {...lokasi,alamat:''};}}
+        async function pakaiSelfieAbsen(){if(!fotoSementaraAbsen)return;const tombol=document.getElementById('tombolPakaiAbsen');tombol.disabled=true;tombol.textContent='Memeriksa lokasi...';document.getElementById('pesanKameraAbsen').textContent='Mohon tetap di halaman ini selama lokasi diperiksa.';try{let lokasi=lokasiSementaraAbsen||await ambilLokasiAbsen();if(!Object.prototype.hasOwnProperty.call(lokasi,'alamat'))lokasi=await lengkapiAlamatLokasi(lokasi);buktiAbsen={foto:fotoSementaraAbsen,...lokasi};document.getElementById('buktiAbsenCard').classList.add('ready');document.getElementById('statusBuktiAbsen').innerHTML=`<b>Selfie dan lokasi siap</b><br>${escapeHtml(lokasi.alamat||`${lokasi.latitude.toFixed(6)}, ${lokasi.longitude.toFixed(6)}`)}<br>Akurasi ±${Math.round(lokasi.akurasi)} meter`;document.getElementById('tombolAbsenMasuk').disabled=false;document.getElementById('tombolAbsenPulang').disabled=false;tutupKameraAbsen();}catch(e){const tag=document.getElementById('tagLokasiKamera');tag.className='camera-location-tag error';tag.textContent='⌖ Lokasi gagal';document.getElementById('pesanKameraAbsen').textContent='Lokasi gagal didapatkan. Aktifkan GPS dan izinkan akses lokasi, lalu coba lagi.';}finally{tombol.disabled=false;tombol.textContent='Gunakan Selfie';}}
+        const fieldKaryawan={nik:'karyawanNik',nama:'karyawanNama',nama_panggilan:'karyawanPanggilan',tempat_lahir:'karyawanTempatLahir',tanggal_lahir:'karyawanTanggalLahir',jenis_kelamin:'karyawanJenisKelamin',no_hp:'karyawanHp',email:'karyawanEmail',jabatan:'karyawanJabatan',tanggal_masuk:'karyawanTanggalMasuk',status_kerja:'karyawanStatusKerja',alamat:'karyawanAlamat',kontak_darurat_nama:'karyawanDaruratNama',kontak_darurat_hp:'karyawanDaruratHp',npwp:'karyawanNpwp',bpjs_kesehatan:'karyawanBpjsKes',bpjs_ketenagakerjaan:'karyawanBpjsTk',bank:'karyawanBank',no_rekening:'karyawanRekening'};
+        function bukaFormKaryawan(item=null){bukaModalAdmin('Karyawan',item?.id||'');document.getElementById('judulModalAdmin').textContent=item?'Edit Data Diri Karyawan':'Tambah Karyawan & Akun';Object.entries(fieldKaryawan).forEach(([k,id])=>document.getElementById(id).value=item?.[k]||'');document.getElementById('karyawanPassword').value='';document.getElementById('passwordAwalWrap').style.display=item?'none':'block';if(!item)document.getElementById('karyawanTanggalMasuk').value=tanggalKini();}
+        function dataFormKaryawan(){const body={};Object.entries(fieldKaryawan).forEach(([k,id])=>body[k]=document.getElementById(id).value);body.password=document.getElementById('karyawanPassword').value;return body;}
+        function tambahKaryawan(){const id=document.getElementById('adminEditId').value;fetch(id?`/api/karyawan/${id}`:'/api/karyawan',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(dataFormKaryawan())}).then(r=>r.json()).then(d=>{alert(d.pesan);if(d.status==='sukses'){tutupModalAdmin();loadKaryawan();}})}
+        function bukaResetPassword(id,namaEncoded){bukaModalAdmin('ResetPassword',id);document.getElementById('judulModalAdmin').textContent=`Reset Password — ${decodeURIComponent(namaEncoded)}`;document.getElementById('resetPasswordBaru').value='';document.getElementById('resetPasswordUlang').value='';}
+        function resetPasswordKaryawan(){const id=document.getElementById('adminEditId').value,p1=document.getElementById('resetPasswordBaru').value,p2=document.getElementById('resetPasswordUlang').value;if(p1!==p2)return alert('Ulangi password harus sama.');fetch(`/api/karyawan/${id}/reset-password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p1})}).then(r=>r.json()).then(d=>{alert(d.pesan);if(d.status==='sukses')tutupModalAdmin();});}
+        function simpanModalAdmin(){const jenis=document.getElementById('adminJenis').value;if(jenis==='Pengeluaran')simpanPengeluaran();else if(jenis==='Aset')simpanAset();else if(jenis==='Karyawan')tambahKaryawan();else if(jenis==='ResetPassword')resetPasswordKaryawan();}
+        async function ubahStatusKaryawan(id,aktif){if(!await konfirmasiAplikasi(`${aktif?'Aktifkan kembali':'Nonaktifkan'} karyawan ini?`,{judul:'Status Karyawan',teksKonfirmasi:'Lanjutkan'}))return;fetch(`/api/karyawan/${id}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({aktif})}).then(r=>r.json()).then(d=>{alert(d.pesan);loadKaryawan();});}
+        function muatGambarData(dataUrl){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=dataUrl;});}
+        function potongBarisCanvas(ctx,teks,lebarMaks,maksBaris=2){const kata=String(teks||'').split(/\s+/),baris=[];let kini='';for(const k of kata){const calon=(kini+' '+k).trim();if(ctx.measureText(calon).width<=lebarMaks)kini=calon;else{if(kini)baris.push(kini);kini=k;if(baris.length===maksBaris-1)break;}}if(kini&&baris.length<maksBaris)baris.push(kini);return baris;}
+        async function beriWatermarkAbsensi(dataUrl,aksi,bukti){const img=await muatGambarData(dataUrl),canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0);const skala=Math.max(canvas.width/720,.7),pad=Math.round(20*skala),judul=Math.round(22*skala),teks=Math.round(15*skala),baris=Math.round(21*skala);ctx.font=`600 ${teks}px Arial`;const alamat=potongBarisCanvas(ctx,bukti.alamat||`${bukti.latitude.toFixed(6)}, ${bukti.longitude.toFixed(6)}`,canvas.width-pad*2,2);const tinggi=pad*2+judul+baris*(alamat.length+2);const y=canvas.height-tinggi,gradasi=ctx.createLinearGradient(0,y,0,canvas.height);gradasi.addColorStop(0,'rgba(28,20,24,.35)');gradasi.addColorStop(.25,'rgba(28,20,24,.78)');gradasi.addColorStop(1,'rgba(28,20,24,.92)');ctx.fillStyle=gradasi;ctx.fillRect(0,y,canvas.width,tinggi);ctx.fillStyle='#fff';ctx.textBaseline='top';ctx.font=`700 ${judul}px Arial`;ctx.fillText(`ABSEN ${aksi==='masuk'?'MASUK':'PULANG'} • ETH AESTHETIC`,pad,y+pad);let ty=y+pad+judul+Math.round(7*skala);const pilihan=document.getElementById('pilihKaryawan'),namaPilihan=pilihan?.selectedOptions?.[0]?.textContent?.replace(/^\S+\s*[—-]\s*/,'');ctx.font=`600 ${teks}px Arial`;ctx.fillText(String(bolehAbsenKaryawanLain()&&namaPilihan?namaPilihan:penggunaLogin?.nama||'Karyawan'),pad,ty);ty+=baris;ctx.font=`400 ${teks}px Arial`;alamat.forEach(x=>{ctx.fillText(x,pad,ty);ty+=baris;});const waktu=new Date().toLocaleString('id-ID',{timeZone:'Asia/Jakarta',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});ctx.fillText(`${bukti.latitude.toFixed(6)}, ${bukti.longitude.toFixed(6)} • ±${Math.round(bukti.akurasi)} m • ${waktu} WIB`,pad,ty);return canvas.toDataURL('image/jpeg',.78);}
+        async function catatAbsensi(aksi){const bukti=buktiAbsen;if(!bukti)return alert('Ambil selfie dan lokasi terlebih dahulu.');const boleh=bolehAbsenKaryawanLain();document.getElementById('tombolAbsenMasuk').disabled=true;document.getElementById('tombolAbsenPulang').disabled=true;try{const foto=await beriWatermarkAbsensi(bukti.foto,aksi,bukti);const body={karyawan_id:boleh?document.getElementById('pilihKaryawan').value:null,aksi,catatan:boleh?document.getElementById('absenCatatan').value:'',...bukti,foto};const r=await fetch('/api/absensi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}),d=await r.json();alert(d.pesan);if(r.ok&&d.status==='sukses'){document.getElementById('absenCatatan').value='';resetBuktiAbsen();loadAbsensi();return;}}catch(e){alert('Absensi gagal dikirim. Periksa koneksi lalu coba lagi.');}document.getElementById('tombolAbsenMasuk').disabled=false;document.getElementById('tombolAbsenPulang').disabled=false;}
+        function bukaHistoryKaryawan(id){karyawanHistoryAktif=id;const bulan=document.getElementById('bulanHistoryKaryawan');if(!bulan.value)bulan.value=bulanKini();document.getElementById('historyKaryawanPanel').style.display='block';muatHistoryKaryawan();}
+        function tombolBuktiAbsen(x,jenis){const ada=x[`ada_foto_${jenis}`],lat=x[`latitude_${jenis}`],lon=x[`longitude_${jenis}`],akurasi=x[`akurasi_${jenis}`],alamat=encodeURIComponent(x[`alamat_${jenis}`]||'');return ada?`<button class="btn-small" onclick="lihatBuktiAbsen(${x.id},'${jenis}',${Number(lat)},${Number(lon)},${Number(akurasi)||0},'${escapeHtml(x.tanggal)}','${escapeHtml(x[`jam_${jenis}`]||'')}','${alamat}')">Lihat Bukti</button>`:'-';}
+        function muatHistoryKaryawan(){if(!karyawanHistoryAktif)return;const bulan=document.getElementById('bulanHistoryKaryawan').value||bulanKini();fetch(`/api/karyawan/${karyawanHistoryAktif}/absensi?bulan=${bulan}`).then(r=>r.json()).then(d=>{document.getElementById('judulHistoryKaryawan').textContent=`History Absensi — ${d.karyawan.nama}`;document.getElementById('tableHistoryKaryawan').innerHTML=(d.history||[]).map(x=>`<tr><td>${escapeHtml(x.tanggal)}</td><td>${escapeHtml(x.jam_masuk||'-')}</td><td>${escapeHtml(x.jam_pulang||'-')}</td><td>${tombolBuktiAbsen(x,'masuk')}</td><td>${tombolBuktiAbsen(x,'pulang')}</td><td>${escapeHtml(x.status)}</td><td>${escapeHtml(x.catatan||'-')}</td></tr>`).join('')||'<tr><td colspan="7">Belum ada absensi pada bulan ini.</td></tr>';});}
+        function lihatBuktiAbsen(id,jenis,lat,lon,akurasi,tanggal,jam,alamatEncoded=''){const alamat=decodeURIComponent(alamatEncoded||'');document.getElementById('judulBuktiAbsen').textContent=`Bukti Absen ${jenis==='masuk'?'Masuk':'Pulang'}`;document.getElementById('fotoBuktiAbsen').src=`/api/absensi/${id}/foto/${jenis}?t=${Date.now()}`;document.getElementById('metaBuktiAbsen').innerHTML=`<b>${escapeHtml(tanggal)} • ${escapeHtml(jam)} WIB</b><br>${alamat?`<b>Alamat:</b> ${escapeHtml(alamat)}<br>`:''}<b>Koordinat:</b> ${lat.toFixed(6)}, ${lon.toFixed(6)}<br><b>Akurasi:</b> ±${Math.round(akurasi)} meter`;document.getElementById('tautanLokasiAbsen').href=`https://www.google.com/maps?q=${lat},${lon}`;document.getElementById('modalBuktiAbsen').style.display='block';document.body.classList.add('modal-open');}
+        function tutupBuktiAbsen(){document.getElementById('modalBuktiAbsen').style.display='none';document.getElementById('fotoBuktiAbsen').src='';document.body.classList.remove('modal-open');}
+        function perbaruiJamAbsensi(){const sekarangWib=new Date(Date.now()+7*3600000);const iso=sekarangWib.toISOString();const jam=document.getElementById('jamAbsensi'),tgl=document.getElementById('tanggalAbsensi');if(jam)jam.textContent=iso.slice(11,19);if(tgl)tgl.textContent=sekarangWib.toLocaleDateString('id-ID',{timeZone:'UTC',weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+        setInterval(perbaruiJamAbsensi,1000);perbaruiJamAbsensi();
+
+        const izinMenu={kasir:'menu_kasir',billing:'menu_billing',hutang:'menu_kurang_bayar',stok:'menu_stok',pasien:'menu_pasien',laporan:'menu_laporan',pengeluaran:'menu_pengeluaran',aset:'menu_aset',karyawan:'menu_karyawan',absensi:'menu_absensi',akses:'pengaturan_akses'};
+        function terapkanHakAkses(){
+            document.querySelectorAll('.tab[data-tab]').forEach(t=>t.style.display=izinLogin.has(izinMenu[t.dataset.tab])?'':'none');
+            document.querySelectorAll('.menu-group').forEach(g=>g.style.display=[...g.querySelectorAll('.tab')].some(t=>t.style.display!=='none')?'':'none');
+            const aturanAksi=[
+                [/tambahKeKeranjang|bayar\(/,'aksi_transaksi'],[/tambahPembayaran|lunasiBilling|hapusBilling/,'aksi_pembayaran'],
+                [/bukaFormPengeluaran|simpanPengeluaran|hapusPengeluaran/,'aksi_pengeluaran'],[/bukaFormAset|simpanAset|arsipAset|lepasArsipAset/,'aksi_aset'],
+                [/bukaFormKaryawan|tambahKaryawan|ubahStatusKaryawan/,'aksi_karyawan']
+            ];
+            document.querySelectorAll('[onclick]').forEach(el=>{const aksi=el.getAttribute('onclick')||'';const cocok=aturanAksi.find(([p])=>p.test(aksi));if(cocok&&!izinLogin.has(cocok[1]))el.style.display='none';});
+            const chip=document.getElementById('userChip');chip.style.display='block';chip.innerHTML=`<b>${escapeHtml(penggunaLogin.nama)}</b><br>${escapeHtml(penggunaLogin.jabatan)}`;
+            let tersimpan='';try{tersimpan=localStorage.getItem('ethMenuAktif')||''}catch(e){}
+            const tombolTersimpan=document.querySelector(`.tab[data-tab="${tersimpan}"]`);
+            if(!tombolTersimpan||tombolTersimpan.style.display==='none'){
+                const pertama=[...document.querySelectorAll('.tab[data-tab]')].find(t=>t.style.display!=='none');
+                if(pertama)try{localStorage.setItem('ethMenuAktif',pertama.dataset.tab)}catch(e){}
+            }
+        }
+        function initializeAuth(){
+            fetch('/api/auth/status').then(r=>r.json()).then(d=>{
+                if(!d.logged_in){authModeSetup=Boolean(d.setup_required);document.getElementById('authScreen').classList.add('open');document.getElementById('authTitle').textContent=authModeSetup?'Buat Akun Owner':'Selamat datang kembali';document.getElementById('authHint').textContent=authModeSetup?'Pengaturan awal keamanan ETH Aesthetic Center':'Masuk untuk memulai aktivitas kerja hari ini.';document.getElementById('ownerNameWrap').style.display=authModeSetup?'block':'none';document.getElementById('authButton').textContent=authModeSetup?'Buat Akun Owner':'Masuk & Mulai Bekerja';setTimeout(()=>document.getElementById('authUsername').focus(),120);return;}
+                penggunaLogin=d.user;izinLogin=new Set(d.permissions||[]);let baruLogin=false;try{baruLogin=sessionStorage.getItem('ethBaruLoginKeAbsensi')==='1';sessionStorage.removeItem('ethBaruLoginKeAbsensi');if(baruLogin)localStorage.setItem('ethMenuAktif','absensi');}catch(e){}terapkanHakAkses();mulaiAplikasi();
+            }).catch(()=>{document.getElementById('authScreen').classList.add('open');document.getElementById('authError').textContent='Server tidak dapat dihubungi.'});
+        }
+        function kirimAuth(){const url=authModeSetup?'/api/auth/setup':'/api/auth/login';const body={nama:document.getElementById('authNama').value,username:document.getElementById('authUsername').value,password:document.getElementById('authPassword').value};document.getElementById('authError').textContent='';const tombol=document.getElementById('authButton');tombol.disabled=true;tombol.textContent='Memeriksa akun...';fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(async r=>({ok:r.ok,data:await r.json()})).then(x=>{if(!x.ok){document.getElementById('authError').textContent=x.data.pesan;tombol.disabled=false;tombol.textContent=authModeSetup?'Buat Akun Owner':'Masuk & Mulai Bekerja';return}try{sessionStorage.setItem('ethBaruLoginKeAbsensi','1')}catch(e){}location.reload();}).catch(()=>{document.getElementById('authError').textContent='Login gagal diproses.';tombol.disabled=false;tombol.textContent='Masuk & Mulai Bekerja';});}
+        function handleAuthEnter(event){if(event.key==='Enter'){event.preventDefault();kirimAuth();}}
+        function logoutAplikasi(){fetch('/api/auth/logout',{method:'POST'}).finally(()=>{sessionStorage.clear();location.reload();});}
+        function loadHakAkses(){fetch('/api/hak-akses').then(r=>r.json()).then(d=>{dataAksesJabatan=d;const pilih=document.getElementById('pilihJabatanAkses');pilih.innerHTML=d.jabatan.map(j=>`<option value="${escapeHtml(j)}">${escapeHtml(j)}</option>`).join('')||'<option value="">Tambahkan karyawan dan jabatan dahulu</option>';renderHakAkses();});}
+        function renderHakAkses(){if(!dataAksesJabatan)return;const jabatan=document.getElementById('pilihJabatanAkses').value;const aktif=new Set(dataAksesJabatan.akses[jabatan]||[]);document.getElementById('daftarHakAkses').innerHTML=Object.entries(dataAksesJabatan.daftar_izin).map(([kode,label])=>`<label class="permission-item"><input type="checkbox" value="${kode}" ${aktif.has(kode)?'checked':''}><span>${escapeHtml(label)}</span></label>`).join('');}
+        function simpanHakAkses(){const jabatan=document.getElementById('pilihJabatanAkses').value;const permissions=[...document.querySelectorAll('#daftarHakAkses input:checked')].map(x=>x.value);fetch('/api/hak-akses',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jabatan,permissions})}).then(r=>r.json()).then(d=>{alert(d.pesan);if(d.status==='sukses')loadHakAkses();});}
+
+        window.onload = initializeAuth;
+    </script>
+</body>
+</html>
